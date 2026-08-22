@@ -20,15 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by GiveMeAllYourCats
-
-# encoding: utf-16
-
-
-import urllib.request
-import shutil
 import time
 import glob
 import sys
@@ -36,54 +27,33 @@ import os
 import itertools
 from subprocess import Popen, PIPE
 from optparse import OptionParser
-from termcolor import colored
 
+try:
+    from termcolor import colored
+except ImportError:
+    # Fallback for environments without termcolor
+    def colored(text, color, attrs=None):
+        return text
 
-# Test whether a path exists.  Returns False for broken symbolic links
-def exists(path):
-    try:
-        os.stat(path)
-    except os.error:
-        return False
-    return True
-
-
-# Add any test models you want here!
-download_data = {
-    'ryuko': 'https://www.dropbox.com/s/74fj6msbyn3c7rn/armature.ryuko.blend?dl=1',
-    'bonetranslationerror': 'https://www.dropbox.com/s/ckoseplcfdozpeu/armature.translationerror.blend?dl=1',
-}
-
-# Download them
-for name in download_data:
-    url = download_data[name]
-    filename = str('armature.' + str(name) + '.blend')
-    new_file_path = os.path.join(os.path.dirname(__file__), 'armatures', 'armature.' + str(name) + '.blend')
-    if exists(new_file_path) is False:
-        print('Notice: Downloaded ' + filename + ' because it didn\'t existed')
-        with urllib.request.urlopen(url) as response, open(new_file_path, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
 
 start_time = time.time()
 
 parser = OptionParser()
 parser.add_option('-b', '--blend', dest='blender_exec', help='sets the blender executable', metavar='BLENDER', default='blender')
 parser.add_option('-t', '--test', dest='globber_test', help='sets the unit to test', metavar='TEST', default='*')
-parser.add_option('-c', '--ci', dest='ci', help='is travis running this test?', metavar='CI', default=False)
-parser.add_option('-a', '--armature', dest='globber_armature', help='sets the armature blend file to test', metavar='ARMATURE', default='*')
+parser.add_option('-c', '--ci', dest='ci', help='is ci running this test?', metavar='CI', default=False)
 parser.add_option('-v', '--verbose', dest='verbosity', help='verbosity unit tests', metavar='VERBOSE', default=False)
 
 (options, args) = parser.parse_args()
 
-ci = options.ci
+ci = str(options.ci).lower() in ('1', 'true', 'yes')
 blender_exec = options.blender_exec
 globber_test = options.globber_test
-globber_armature = options.globber_armature
-verbosity = options.verbosity
+verbosity = str(options.verbosity).lower() in ('1', 'true', 'yes')
 
 scripts = 0
 exit_code = 0
-scripts_only_executed_once = ['atlas.test.py', 'syntax.test.py']
+scripts_only_executed_once = ['syntax.test.py']
 scripts_executed = []
 
 
@@ -125,56 +95,59 @@ def print_output(raw, output):
         print(raw)
 
 
-# iterate over each *.test.py file in the 'tests' directory
-# and open up blender with the armature files found in 'tests/armatures' directory
-for blend_file in glob.glob('./tests/armatures/armature.' + globber_armature + '.blend'):
-    for file in glob.glob('./tests/' + globber_test + '.test.py'):
-        if os.path.basename(file) in scripts_only_executed_once:
-            if os.path.basename(file) in scripts_executed:
-                continue  # skips already executed test
+# Iterate over each *.test.py file in the 'tests' directory.
+# Tests that need a .blend file use programmatically generated fixtures.
+# Tests that don't need a blend file (syntax, registration) run without one.
+test_files = sorted(glob.glob('./tests/' + globber_test + '.test.py'))
+if not test_files:
+    print('ERROR: No test files found matching pattern: ' + globber_test)
+    sys.exit(1)
 
-        scripts_executed.append(os.path.basename(file))
-        scripts += 1
-        start_time_unit = time.time()
-        p = Popen([blender_exec, '--addons', 'mmd_tools', '--addons', 'cats', '--factory-startup', '-noaudio', '-b', blend_file, '--python', file], shell=False, stdout=PIPE, stderr=PIPE)
-        if ci is False:
-            while p.poll() is None:
-                nextline = p.stdout.readline()
-                if nextline == '' and p.poll() is not None:
-                    break
-                do_print = ' ' + next(spinner) + ' UNIT ' + os.path.basename(file).ljust(22) + ' > BLEND ' + os.path.basename(blend_file).ljust(40) + ' > ' + show_time(time.time() - start_time_unit) + 's '
-                sys.stdout.write(do_print)
-                sys.stdout.flush()
-                [sys.stdout.write('\b') for i in range(len(do_print))]
+addon_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+bootstrap = (
+    "import sys, os, importlib.util; "
+    "addon_dir=" + repr(addon_dir) + "; "
+    "spec=importlib.util.spec_from_file_location('cats', addon_dir + os.sep + '__init__.py', submodule_search_locations=[addon_dir]); "
+    "cats=importlib.util.module_from_spec(spec); "
+    "sys.modules['cats']=cats; "
+    "spec.loader.exec_module(cats); cats.register()"
+)
 
+for file in test_files:
+    basename = os.path.basename(file)
+    if basename in scripts_only_executed_once:
+        if basename in scripts_executed:
+            continue
+
+    scripts_executed.append(basename)
+    scripts += 1
+    start_time_unit = time.time()
+
+    # Tests that don't need a blend file run with --factory-startup only
+    # Tests that generate their own fixtures do so inside the test script
+    p = Popen([blender_exec, '--factory-startup', '-noaudio', '-b', '--python-expr', bootstrap, '--python', file], shell=False, stdout=PIPE, stderr=PIPE)
+
+    if ci is False:
+        while p.poll() is None:
+            sys.stdout.write('\r' + next(spinner) + ' running ' + basename + '...')
+            sys.stdout.flush()
+            time.sleep(0.1)
+        sys.stdout.write('\r' + ' ' * 80 + '\r')
         sys.stdout.flush()
-        (stdout, stderr) = p.communicate()
 
-        error_output = str(stderr, 'utf-8')
-        std_output = str(stdout, 'utf-8')
-        print(' > UNIT ' + os.path.basename(file).ljust(22) + ' > BLEND ' + os.path.basename(blend_file).ljust(40) + ' > ' + show_time(time.time() - start_time_unit) + 's')
+    stdout, stderr = p.communicate()
+    raw_output = stdout.decode('utf-8', errors='replace') + stderr.decode('utf-8', errors='replace')
 
-        # This will detect invalid syntax in the unit test itself
-        if 'SyntaxError' in error_output or 'IndentationError' in error_output or 'NameError' in error_output:
-            print('ERROR: SyntaxError found in ' + os.path.basename(file))
-            print('------------------------------------------------------------------')
-            print_output(stderr, error_output)
-            print('------------------------------------------------------------------\n\n')
-            exit_code = 1
-            exit_test()
+    if verbosity:
+        print_output(raw_output, raw_output)
 
-        # If a unit test went wrong, we want to see the output of the test
-        if p.returncode != 0:
-            print(os.path.basename(file).replace('.blend', '.py') + ' (' + os.path.basename(blend_file) + ') - exit code: ' + str(p.returncode))
-            print('------------------------------------------------------------------')
-            print_output(stdout, std_output)
-            print_output(stderr, error_output)
-            print('------------------------------------------------------------------\n\n')
-            exit_code = p.returncode
-            exit_test()
-        else:
-            if verbosity:
-                print_output(stdout, std_output)
+    if p.returncode != 0:
+        exit_code = 1
+        if not verbosity:
+            print_output(raw_output, raw_output)
 
+    elapsed = round(time.time() - start_time_unit)
+    status = colored('PASS', 'green', attrs=['bold']) if p.returncode == 0 else colored('FAIL', 'red', attrs=['bold'])
+    print(' > ' + basename + ' ' + status + ' in ' + show_time(elapsed) + 's')
 
 exit_test()

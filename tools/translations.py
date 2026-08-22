@@ -2,26 +2,21 @@
 
 import os
 import csv
-import ssl
 import bpy
 import json
-import urllib
 import pathlib
 import addon_utils
 from bpy.app.translations import locale
 
 from .register import register_wrap
-from . import settings
 
 main_dir = pathlib.Path(os.path.dirname(__file__)).parent.resolve()
 resources_dir = os.path.join(str(main_dir), "resources")
 translations_file = os.path.join(resources_dir, "translations.csv")
-settings_file = os.path.join(resources_dir, "settings.json")
 
 dictionary = {}
 languages = []
 verbose = True
-translation_download_link = "https://docs.google.com/spreadsheets/d/1ZAqNxaduDJJ31t9z3BXyBSDmq4mEGySaFafydRoglf4/export?gid=346601779&format=csv"
 
 
 def load_translations():
@@ -84,14 +79,16 @@ def get_languages_list(self, context):
 
 
 def update_ui(self, context):
+    from . import settings
     if settings.update_settings(None, None):
         reload_scripts()
 
 
 def get_language_from_settings():
     # Load settings file
+    from . import settings as Settings
     try:
-        with open(settings_file, encoding="utf8") as file:
+        with open(Settings.settings_file, encoding="utf8") as file:
             settings_data = json.load(file)
     except FileNotFoundError:
         print("SETTINGS FILE NOT FOUND!")
@@ -112,39 +109,7 @@ def get_language_from_settings():
 
 
 def reload_scripts():
-    for mod in addon_utils.modules():
-        if mod.bl_info['name'] == 'Cats Blender Plugin':
-            # importlib.reload(mod)
-            # bpy.ops.wm.addon_enable(module=mod.__name__)
-            # bpy.ops.preferences.addon_disable(module=mod.__name__)
-            # bpy.ops.preferences.addon_enable(module=mod.__name__)
-            bpy.ops.script.reload()
-            break
-
-
-@register_wrap
-class DownloadTranslations(bpy.types.Operator):
-    bl_idname = 'cats_translations.download_latest'
-    bl_label = "Download UI Translations"
-    bl_description = "Downloads the latest UI translations from Google. This should only be used by translators"
-    bl_options = {'INTERNAL'}
-
-    def execute(self, context):
-        # Download csv
-        print('DOWNLOAD FILE')
-        try:
-            ssl._create_default_https_context = ssl._create_unverified_context
-            urllib.request.urlretrieve(translation_download_link, translations_file)
-        except urllib.error.URLError:
-            print("TRANSLATIONS FILE COULD NOT BE DOWNLOADED")
-            self.report({'ERROR'}, "TRANSLATIONS FILE COULD NOT BE DOWNLOADED, check your internet connection")
-            return {'CANCELLED'}
-        print('DOWNLOAD FINISHED')
-
-        reload_scripts()
-
-        self.report({'INFO'}, "Successfully downloaded the translations")
-        return {'FINISHED'}
+    bpy.ops.script.reload()
 
 
 load_translations()

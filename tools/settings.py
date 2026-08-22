@@ -36,24 +36,30 @@ from collections import OrderedDict
 
 from .. import globs
 from ..tools.register import register_wrap
-# from ..googletrans import Translator  # Todo Remove this
-from ..extern_tools.google_trans_new.google_trans_new import google_translator
 from . import translate as Translate
 from .translations import t
 
 main_dir = pathlib.Path(os.path.dirname(__file__)).parent.resolve()
 resources_dir = os.path.join(str(main_dir), "resources")
-settings_file = os.path.join(resources_dir, "settings.json")
+
+# Use extension user path for writable settings if available (Blender 4.2+).
+# Fall back to resources dir for legacy installs / tests.
+try:
+    _ext_user_path = bpy.utils.extension_path_user(__package__, path="settings.json")
+    if _ext_user_path:
+        settings_file = _ext_user_path
+    else:
+        settings_file = os.path.join(resources_dir, "settings.json")
+except (AttributeError, ValueError, TypeError):
+    settings_file = os.path.join(resources_dir, "settings.json")
 
 settings_data = None
 settings_data_unchanged = None
 
 # Settings name = [Default Value, Require Blender Restart]
 settings_default = OrderedDict()
-settings_default['show_mmd_tabs'] = [True, False]
 settings_default['embed_textures'] = [False, False]
 settings_default['ui_lang'] = ["auto", False]
-# settings_default['use_custom_mmd_tools'] = [False, True]
 
 lock_settings = False
 
@@ -74,20 +80,6 @@ class RevertChangesButton(bpy.types.Operator):
 
 
 @register_wrap
-class ResetGoogleDictButton(bpy.types.Operator):
-    bl_idname = 'cats_settings.reset_google_dict'
-    bl_label = t('ResetGoogleDictButton.label')
-    bl_description = t('ResetGoogleDictButton.desc')
-    bl_options = {'INTERNAL'}
-
-    def execute(self, context):
-        Translate.reset_google_dict()
-        Translate.load_translations()
-        self.report({'INFO'}, t('ResetGoogleDictButton.resetInfo'))
-        return {'FINISHED'}
-
-
-@register_wrap
 class DebugTranslations(bpy.types.Operator):
     bl_idname = 'cats_settings.debug_translations'
     bl_label = t('DebugTranslations.label')
@@ -96,12 +88,7 @@ class DebugTranslations(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.debug_translations = True
-        translator = google_translator()
-        try:
-            translator.translate('猫')
-        except:
-            self.report({'INFO'}, t('DebugTranslations.error'))
-
+        Translate.load_translations()
         bpy.context.scene.debug_translations = False
         self.report({'INFO'}, t('DebugTranslations.success'))
         return {'FINISHED'}
@@ -133,36 +120,10 @@ def load_settings():
     to_reset_settings = []
 
     # Check for missing entries, reset if necessary
-    for setting in ['last_supporter_update']:
-        if setting not in settings_data and setting not in to_reset_settings:
-            to_reset_settings.append(setting)
-            print('RESET SETTING', setting)
-
-    # Check for other missing entries, reset if necessary
     for setting in settings_default.keys():
         if setting not in settings_data and setting not in to_reset_settings:
             to_reset_settings.append(setting)
             print('RESET SETTING', setting)
-
-    # Check if timestamps are correct
-    utc_now = datetime.strptime(datetime.now(timezone.utc).strftime(globs.time_format), globs.time_format)
-    for setting in ['last_supporter_update']:
-        if setting not in to_reset_settings and settings_data.get(setting):
-            try:
-                timestamp = datetime.strptime(settings_data.get(setting), globs.time_format)
-            except ValueError:
-                to_reset_settings.append(setting)
-                print('RESET TIME', setting)
-                continue
-
-            # If timestamp is in future
-            time_delta = (utc_now - timestamp).total_seconds()
-            if time_delta < 0:
-                to_reset_settings.append(setting)
-                print('TIME', setting, 'IN FUTURE!', time_delta)
-            else:
-                pass
-                # print('TIME', setting, 'IN PAST!', time_delta)
 
     # If there are settings to reset, reset them
     if to_reset_settings:
@@ -186,7 +147,6 @@ def reset_settings(full_reset=False, to_reset_settings=None):
 
     if full_reset:
         settings_data = OrderedDict()
-        settings_data['last_supporter_update'] = None
 
         for setting, value in settings_default.items():
             settings_data[setting] = value[0]
@@ -251,7 +211,7 @@ def update_settings(self, context):
     # None means that the settings did change
     settings_changed_tmp = False
     if lock_settings:
-        return settings_changed_tmp
+        return
 
     for setting in settings_default.keys():
         old = settings_data[setting]
@@ -262,21 +222,6 @@ def update_settings(self, context):
 
     if settings_changed_tmp:
         save_settings()
-
-    return settings_changed_tmp
-
-
-def set_last_supporter_update(last_supporter_update):
-    settings_data['last_supporter_update'] = last_supporter_update
-    save_settings()
-
-
-def get_last_supporter_update():
-    return settings_data.get('last_supporter_update')
-
-
-def get_use_custom_mmd_tools():
-    return settings_data.get('use_custom_mmd_tools')
 
 
 def get_embed_textures():

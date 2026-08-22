@@ -1,0 +1,39 @@
+schema_version = "1.0.0"
+
+id = "cats_blender_plugin"
+version = "1.0.0"
+name = "Cats Blender Plugin"
+tagline = "Strip down tools for VRChat avatar optimization"
+maintainer = "Alex Popp <poppart@mac.com>"
+type = "add-on"
+
+# Optional: link to documentation, support (public bug tracker), source files, etc.
+website = "https://github.com/ZenithVal/cats-blender-plugin"
+support = "https://github.com/ZenithVal/cats-blender-plugin/issues"
+
+# Optional: tag list defined by Blender and server, see:
+# https://docs.blender.org/manual/en/latest/advanced/extensions/tags.html
+tags = ["3D View"]
+
+blender_version_min = "5.2.0"
+
+# License conforming to https://spdx.org/licenses/ (use "SPDX:" prefix)
+# https://docs.blender.org/manual/en/latest/advanced/extensions/licenses.html
+license = [
+  "SPDX:MIT",
+]
+
+# Optional: required by some licenses.
+copyright = [
+  "2017-2025 GiveMeAllYourCats",
+]
+
+# Optional: add-ons can list which resources they will require:
+# * files (for access of any filesystem operations)
+# * network (for internet access)
+# * clipboard (to read and/or write the system clipboard)
+# * camera (to capture photos and videos)
+# * microphone (to capture audio)
+# Each permission must be followed by an explanation string of no more than 64 characters
+# without a period (.) at the end.
+# All network features were removed in v1.0.0, so no permissions are declared.

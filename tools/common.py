@@ -33,22 +33,14 @@ import platform
 from math import degrees
 from mathutils import Vector
 from datetime import datetime
-from html.parser import HTMLParser
-from html.entities import name2codepoint
 
 from . import common as Common
-from . import supporter as Supporter
 from . import decimation as Decimation
 from . import translate as Translate
 from . import armature_bones as Bones
 from . import settings as Settings
 from .register import register_wrap
 from .translations import t
-
-from mmd_tools_local import utils
-from mmd_tools_local.panels import tool as mmd_tool
-from mmd_tools_local.panels import util_tools as mmd_util_tools
-from mmd_tools_local.panels import view_prop as mmd_view_prop
 
 # TODO:
 #  - Add check if hips bone really needs to be rotated
@@ -198,6 +190,8 @@ def get_active():
 
 
 def select(obj, sel=True):
+    if obj is None:
+        return
     if sel:
         hide(obj, False)
     obj.select_set(sel)
@@ -208,6 +202,8 @@ def is_selected(obj):
 
 
 def hide(obj, val=True):
+    if obj is None:
+        return
     if hasattr(obj, 'hide'):
         obj.hide = val
     obj.hide_set(val)
@@ -919,17 +915,45 @@ def reset_transforms(armature_name=None):
             mesh.scale[i] = 1
 
 
+def _separate_by_materials(mesh_obj):
+    """Separate a mesh object by its materials (inlined from removed utils module)."""
+    if len(mesh_obj.data.materials) < 2:
+        return
+    prev_parent = mesh_obj.parent
+    dummy_parent = bpy.data.objects.new(name='tmp', object_data=None)
+    mesh_obj.parent = dummy_parent
+    mesh_obj.active_shape_key_index = 0
+    try:
+        switch('EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.separate(type='MATERIAL')
+    finally:
+        switch('OBJECT')
+        for i in dummy_parent.children:
+            materials = i.data.materials
+            i.name = getattr(materials[0], 'name', 'None') if len(materials) else 'None'
+            i.parent = prev_parent
+        bpy.data.objects.remove(dummy_parent)
+
+
+def _clear_unused_meshes():
+    """Remove mesh datablocks with zero users (inlined from removed utils module)."""
+    for mesh in list(bpy.data.meshes):
+        if mesh.users == 0:
+            bpy.data.meshes.remove(mesh)
+
+
 def separate_by_materials(context, mesh):
     prepare_separation(mesh)
 
-    utils.separateByMaterials(mesh)
+    _separate_by_materials(mesh)
 
     for ob in context.selected_objects:
         if ob.type == 'MESH':
             hide(ob, False)
             clean_shapekeys(ob)
 
-    utils.clearUnusedMeshes()
+    _clear_unused_meshes()
 
     # Update the material list of the Material Combiner
     update_material_list()
@@ -942,7 +966,7 @@ def separate_by_loose_parts(context, mesh):
     # This essentially does nothing but merges the extremely small parts together.
     remove_doubles(mesh, 0, save_shapes=True)
 
-    utils.separateByMaterials(mesh)
+    _separate_by_materials(mesh)
 
     meshes = []
     for ob in context.selected_objects:
@@ -981,7 +1005,7 @@ def separate_by_loose_parts(context, mesh):
 
     wm.progress_end()
 
-    utils.clearUnusedMeshes()
+    _clear_unused_meshes()
 
     # Update the material list of the Material Combiner
     update_material_list()
@@ -1028,56 +1052,7 @@ def separate_by_shape_keys(context, mesh):
                 clean_shapekeys(ob)
                 switch('OBJECT')
 
-    utils.clearUnusedMeshes()
-
-    # Update the material list of the Material Combiner
-    update_material_list()
-    return True
-
-
-def separate_by_cats_protection(context, mesh):
-    prepare_separation(mesh)
-
-    switch('EDIT')
-    bpy.ops.mesh.select_mode(type="VERT")
-    bpy.ops.mesh.select_all(action='DESELECT')
-
-    switch('OBJECT')
-    selected_count = 0
-    max_count = 0
-    if has_shapekeys(mesh):
-        for kb in mesh.data.shape_keys.key_blocks:
-            if kb.name == 'Basis Original':
-                for i, (v0, v1) in enumerate(zip(kb.relative_key.data, kb.data)):
-                    max_count += 1
-                    if v0.co != v1.co:
-                        mesh.data.vertices[i].select = True
-                        selected_count += 1
-
-    if not selected_count or selected_count == max_count:
-        return False
-
-    switch('EDIT')
-    bpy.ops.mesh.select_all(action='INVERT')
-
-    bpy.ops.mesh.separate(type='SELECTED')
-
-    for ob in context.selected_objects:
-        if ob.type == 'MESH':
-            if ob != get_active():
-                print('not active', ob.name)
-                active_tmp = get_active()
-                ob.name = ob.name.replace('.001', '') + '.no_shapes'
-                set_active(ob)
-                bpy.ops.object.shape_key_remove(all=True)
-                set_active(active_tmp)
-                select(ob, False)
-            else:
-                print('active', ob.name)
-                clean_shapekeys(ob)
-                switch('OBJECT')
-
-    utils.clearUnusedMeshes()
+    _clear_unused_meshes()
 
     # Update the material list of the Material Combiner
     update_material_list()
@@ -1658,7 +1633,7 @@ class ShowError(bpy.types.Operator):
                     row.label(text=line, icon='ERROR')
                     first_line = True
                 else:
-                    row.label(text=line, icon_value=Supporter.preview_collections["custom_icons"]["empty"].icon_id)
+                    row.label(text=line, icon='BLANK1')
 
 
 def remove_doubles(mesh, threshold, save_shapes=True):
@@ -1754,7 +1729,7 @@ def mix_weights(mesh, vg_from, vg_to, mix_strength=1.0, mix_mode='ADD', delete_o
 
 
 def get_user_preferences():
-    return bpy.context.user_preferences if hasattr(bpy.context, 'user_preferences') else bpy.context.preferences
+    return bpy.context.preferences
 
 
 def has_shapekeys(mesh):
@@ -2077,105 +2052,6 @@ def fix_twist_bone_names(armature):
             bone_twist = armature.data.edit_bones.get(bone_type + 'Twist_' + suffix)
             if bone_twist:
                 bone_twist.name = 'z' + bone_twist.name
-
-
-def toggle_mmd_tabs_update(self, context):
-    toggle_mmd_tabs()
-
-
-def toggle_mmd_tabs(shutdown_plugin=False):
-    mmd_cls = [
-        mmd_tool.MMDToolsObjectPanel,
-        mmd_tool.MMDDisplayItemsPanel,
-        mmd_tool.MMDMorphToolsPanel,
-        mmd_tool.MMDRigidbodySelectorPanel,
-        mmd_tool.MMDJointSelectorPanel,
-        mmd_util_tools.MMDMaterialSorter,
-        mmd_util_tools.MMDMeshSorter,
-    ]
-    mmd_cls_shading = [
-        mmd_view_prop.MMDViewPanel,
-        mmd_view_prop.MMDSDEFPanel,
-    ]
-    mmd_cls = mmd_cls + mmd_cls_shading
-
-    # If the plugin is shutting down, load the mmd_tools tabs before that, to avoid issues when unregistering mmd_tools
-    if bpy.context.scene.show_mmd_tabs or shutdown_plugin:
-        for cls in mmd_cls:
-            try:
-                bpy.utils.register_class(cls)
-            except:
-                pass
-    else:
-        for cls in reversed(mmd_cls):
-            try:
-                bpy.utils.unregister_class(cls)
-            except:
-                pass
-
-    if not shutdown_plugin:
-        Settings.update_settings(None, None)
-
-
-
-"""
-HTML <-> text conversions.
-http://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
-"""
-
-
-class _HTMLToText(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self._buf = []
-        self.hide_output = False
-
-    def handle_starttag(self, tag, attrs):
-        if tag in ('p', 'br') and not self.hide_output:
-            self._buf.append('\n')
-        elif tag in ('script', 'style'):
-            self.hide_output = True
-
-    def handle_startendtag(self, tag, attrs):
-        if tag == 'br':
-            self._buf.append('\n')
-
-    def handle_endtag(self, tag):
-        if tag == 'p':
-            self._buf.append('\n')
-        elif tag in ('script', 'style'):
-            self.hide_output = False
-
-    def handle_data(self, text):
-        if text and not self.hide_output:
-            self._buf.append(re.sub(r'\s+', ' ', text))
-
-    def handle_entityref(self, name):
-        if name in name2codepoint and not self.hide_output:
-            c = chr(name2codepoint[name])
-            self._buf.append(c)
-
-    def handle_charref(self, name):
-        if not self.hide_output:
-            n = int(name[1:], 16) if name.startswith('x') else int(name)
-            self._buf.append(chr(n))
-
-    def get_text(self):
-        return re.sub(r' +', ' ', ''.join(self._buf))
-
-
-def html_to_text(html):
-    """
-    Given a piece of HTML, return the plain text it contains.
-    This handles entities and char refs, but not javascript and stylesheets.
-    """
-    parser = _HTMLToText()
-    try:
-        parser.feed(html)
-        parser.close()
-    except:  # HTMLParseError: No good replacement?
-        pass
-    return parser.get_text()
 
 
 """ === THIS CODE COULD BE USEFUL === """

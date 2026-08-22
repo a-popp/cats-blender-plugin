@@ -25,25 +25,10 @@
 import os
 import bpy
 import math
-import webbrowser
 
 from . import common as Common
 from .register import register_wrap
 from .translations import t
-
-
-@register_wrap
-class BakeTutorialButton(bpy.types.Operator):
-    bl_idname = 'cats_bake.tutorial'
-    bl_label = t('cats_bake.tutorial_button.label')
-    bl_description = t('cats_bake.tutorial_button.desc')
-    bl_options = {'INTERNAL'}
-
-    def execute(self, context):
-        webbrowser.open(t('cats_bake.tutorial_button.URL'))
-
-        self.report({'INFO'}, t('cats_bake.tutorial_button.success'))
-        return {'FINISHED'}
 
 
 def autodetect_passes(self, context, tricount, is_desktop):
@@ -292,8 +277,7 @@ class BakeButton(bpy.types.Operator):
         context.scene.render.bake.use_pass_diffuse = "DIFFUSE" in bake_pass_filter
         context.scene.render.bake.use_pass_emit = "EMIT" in bake_pass_filter
         context.scene.render.bake.use_pass_ambient_occlusion = "AO" in bake_pass_filter
-        if bpy.app.version >= (2, 92, 0):
-            context.scene.render.bake.target = "VERTEX_COLORS" if "VERTEX_COLORS" in bake_pass_filter else "IMAGE_TEXTURES"
+        context.scene.render.bake.target = "VERTEX_COLORS" if "VERTEX_COLORS" in bake_pass_filter else "IMAGE_TEXTURES"
         context.scene.cycles.samples = bake_samples
         context.scene.render.bake.use_clear = clear and bake_type == 'NORMAL'
         context.scene.render.bake.use_selected_to_active = (bake_active != None)
@@ -1115,10 +1099,9 @@ class BakeButton(bpy.types.Operator):
                 if mesh.type == 'MESH' and mesh.data.shape_keys is not None:
                     context.view_layer.objects.active = mesh
 
-                    # Ensure auto-smooth is enabled, set custom normals from faces
-                    if not mesh.data.use_auto_smooth:
-                        mesh.data.use_auto_smooth = True
-                        mesh.data.auto_smooth_angle = 3.1416
+                    # Set custom normals from faces (auto-smooth is handled
+                    # by the shade auto smooth modifier in Blender 4.1+)
+                    bpy.ops.object.shade_auto_smooth(angle=3.1416)
 
                     bpy.ops.object.mode_set(mode = 'EDIT')
                     bpy.ops.mesh.select_mode(type="VERT")
@@ -1190,7 +1173,7 @@ class BakeButton(bpy.types.Operator):
         if pass_metallic:
             bpy.data.images["SCRIPT_metallic.png"].save()
         if optimize_static:
-            with open(os.path.dirname(os.path.abspath(__file__)) + "/../extern_tools/BakeFixer.cs", 'r') as infile:
+            with open(os.path.dirname(os.path.abspath(__file__)) + "/../resources/BakeFixer.cs", 'r') as infile:
                 with open(bpy.path.abspath("//CATS Bake/") + "BakeFixer.cs", 'w') as outfile:
                     for line in infile:
                         outfile.write(line)

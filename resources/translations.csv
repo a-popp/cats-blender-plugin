@@ -37,12 +37,12 @@ Blender를 다시 시작하고 Cats Plugin를 다시 활성화하세요!
 "
 Main.error.unsupportedVersion,"
 
-Blender versions older than 4.0 are not supported by Zeni's Stripped Cats. UPDATE, DUMMY 
-Please use Blender 4.0 or later.
+Blender versions older than 5.2 are not supported by Zeni's Stripped Cats.
+Please use Blender 5.2 or later.
 ",,"
 
-2.79 이전의 블렌더 버전은 Cats에서 지원하지 않습니다. 
-Blender 2.79 버전 이상을 사용하세요.
+Blender 5.2 이전 버전은 Zeni's Stripped Cats에서 지원하지 않습니다.
+Blender 5.2 버전 이상을 사용하세요.
 "
 Main.error.beta2.80,"
 
@@ -137,23 +137,10 @@ A hard limit will be established in the future that will not be much more than t
 将来的には、これをはるかに超えることのない厳しい制限が設定されます。","퀘스트용 아바타들을 위해 권장되는 삼각폴리곤(Tris)의 개수입니다.
 앞으로는 이보다 심하지는 않을 엄격한 제한이 설정될 것입니다."
 DecimationPanel.warn.notIfBaking,Not reccomended if baking!,,베이킹 할 시 권장되지 않습니다!
-EyeTrackingPanel.label,Eye Tracking,アイトラッキング,눈 추적(Eye Tracking)
-EyeTrackingPanel.error.noMesh,No meshes found!,メッシュが見つかりません!,메쉬가 발견되지 않음!
-EyeTrackingPanel.error.noArm,No model found!,モデルが見つかりません!,모델이 발견되지 않음!
-EyeTrackingPanel.error.wrongNameArm1,Your armature has to be named 'Armature',アイトラッキングが機能するには,뼈대는 반드시 'Armature'로 이름을 지어야 합니다.
-EyeTrackingPanel.error.wrongNameArm2,      for Eye Tracking to work!,      アーマチュアに'Armature'という名前を付ける必要があります。,      눈 추적(Eye Tracking)이 작동하기 위해!
-EyeTrackingPanel.error.wrongNameArm3,      (currently ',      (現在は ',      (현재로서는 '
-EyeTrackingPanel.error.wrongNameBody1,The mesh containing the eyes has to be,アイトラッキングが機能するには,눈들을 포함한 메쉬는 반드시
-EyeTrackingPanel.error.wrongNameBody2,      named 'Body' for Eye Tracking to work!,      目を含むメッシュに'Body'という名前を付ける必要があります!,      눈 추적(Eye Tracking)을 위해 'Body'로 이름을 지어야 합니다.
-EyeTrackingPanel.error.wrongNameBody3,      (currently ',      (現在は ',      (현재로서는 '
-EyeTrackingPanel.warn.assignEyes1,Don't forget to assign 'LeftEye' and 'RightEye','左目'と'右目' を割り当てることを忘れないでください。,유니티에서 'LeftEye'와 'RightEye'를 
-EyeTrackingPanel.warn.assignEyes2,      to the eyes in Unity!,      ユニティの目に,      적용하는 것을 잊지 마세요!
 VisemePanel.label,Visemes,バイセム,립싱크(Visemes)
 VisemePanel.error.noMesh,No meshes found!,メッシュが見つかりません!,메쉬가 발견되지 않음!
 BoneRootPanel.label,Bone Parenting,ボーンの子育て,본 부모설정
 OptimizePanel.label,Optimization,最適化,최적화
-OptimizePanel.atlasDesc,A greatly improved Atlas Generator.,アトラスジェネレータを大幅に改良。,텍스처들을 결합시켜주는 더욱 향상된 아틀라스 생성기입니다.
-OptimizePanel.atlasAuthor,Made by Shotariya,shotaryiaによって作られた,제작자: Shotariya
 OptimizePanel.matCombDisabled1,Material Combiner is not enabled!,マテリアル コンバイナーが有効になっていません!,매테리얼 통합기가 활성화되지 않았습니다!
 OptimizePanel.matCombDisabled2,Enable it in your user preferences:,ユーザー設定で有効にする:,User preferences에서 이것을 활성화하세요:
 OptimizePanel.matCombOutdated1,Your Material Combiner is outdated!,マテリアル コンバイナーが古い!,당신의 매테리얼 통합기의 버전이 낮습니다!
@@ -165,10 +152,6 @@ OptimizePanel.matCombOutdated5_2.8,right.,右側にあります。。,오른쪽�
 OptimizePanel.matCombOutdated6,Or download and install it manually:,または手動でダウンロードしてインストールする:,혹은 직접 다운로드와 설치하기:
 OptimizePanel.matCombOutdated6_alt,Download and install it manually:,手動でダウンロードしてインストールする:,직접 다운로드와 설치하기:
 OptimizePanel.matCombNotInstalled,Material Combiner is not installed!,マテリアル コンバイナーがインストールされていません!,매테리얼 통합기가 설치되지 않았습니다!
-CopyProtectionPanel.label,Copy Protection,コピープロテクション,복사핵 방지
-CopyProtectionPanel.desc1,Tries to protect your avatar from Unity cache ripping.,Unity キャッシュリッピングからアバターを保護しようとします。,유니티 캐쉬뜨기로부터 당신의 아바타를 보호하세요.
-CopyProtectionPanel.desc2,This protection is not 100% safe!,この保護は100%安全ではありません!,이 방법도 100% 안전하지는 않습니다!
-CopyProtectionPanel.desc3,Before use: Read the documentation!,使用前: ドキュメントを読んでください!,사용 전에: 문서를 읽어주세요!
 BakePanel.label,Bake,焼く,베이크(Bake)
 BakePanel.versionTooOld,Only for Blender 2.80+,,Blender 2.80 버전 이상에서만 호환
 BakePanel.autodetectlabel,Autodetect:,,자동감지:
@@ -184,18 +167,6 @@ UpdaterPanel.label,Settings & Updates,設定と更新,세팅 & 업데이트
 UpdaterPanel.name,Settings:,設定:,세팅:
 UpdaterPanel.requireRestart1,Restart required.,再起動が必要.,재시작이 필요합니다.
 UpdaterPanel.requireRestart2,Some changes require a Blender restart.,一部の変更では、ブレンダーの再起動が必要です.,일부 변경은 블렌더를 다시 시작해야합니다.
-SupporterPanel.label,Supporters,支持者,후원자들
-SupporterPanel.desc,Do you like this plugin and want to support us?,このプラグインが好きで、私たちをサポートしたいですか?,이 플로그인이 도움 되었나요? 저희를 후원해주신다면 정말 기쁠 것입니다!
-SupporterPanel.thanks,Thanks to our awesome supporters! <3,私たちの素晴らしいサポーターに感謝!<3,저희 멋진 후원자분들께 정말로 감사드립니다! <3
-SupporterPanel.missingName1,Is your name missing?,あなたの名前は見つかりませんか?,당신의 이름이 빠졌나요?
-SupporterPanel.missingName2,Please contact us in our discord!,私たちのDiscordで私達にお問い合わせください!,부디 우리 디스코드 서버에 연락주시기 바랍니다!
-CreditsPanel.label,Credits,クレジット,
-CreditsPanel.desc1,Cats Blender Plugin (,,
-CreditsPanel.desc2,Created by Hotox and GiveMeAllYourCats,HotoxとGiveMeAllYourCatsによって作成,멋진 VRChat 커뮤니티를 위해서
-CreditsPanel.desc3,For the awesome VRChat community <3,素晴らしいVRChatコミュニティのために <3,Hotox와 GiveMeAllYourCats에 의해 제작됨 <3
-CreditsPanel.desc4,Special thanks to:,特別な感謝: ShotariyaとNeitri,다음 분들께 특별한 감사를 전합니다:
-CreditsPanel.descContributors,"Feilen, Jordo, Ruubick, Shotariya and Neitri",Feilen、Jordo、Ruubick、ShotariyaとNeitri,"Feilen, Jordo, Ruubick, Shotariya와 Neitri"
-CreditsPanel.desc5,Do you need help or found a bug?,助けが必要ですか、バグを見つけましたか?,도움이 필요하시거나 혹시 버그를 찾으셨나요?
 FixArmature.label,Break Model,モデル修正,모델 고치기
 FixArmature.desc,"PROBABLY DON'T TRUST THIS IN 2024+
 SHOULD automatically:
@@ -311,15 +282,6 @@ Very useful for manual decimation",,"선택된 메쉬를 두 부분으로 나누
 
 수동으로 데시메이션을 할 시 매우 유용합니다"
 SeparateByShapekeys.success,Successfully separated by shape keys.,,성공적으로 쉐이프키별로 분리됐습니다.
-SeparateByCopyProtection.label,Separate by Copy Protection,コピープロテクションに分離する,복사핵 방지로 분리하기
-SeparateByCopyProtection.desc,"Separates selected mesh into two parts,
-depending on whether it is effected by the Cats Copy Protection or not.
-
-Useful if you have the Copy Protection enabled on multiple selected parts of your model",,"선택된 메쉬를 두 부분으로 나누는데,
-Cats의 복사핵 방지의 영향을 받는지 여부에 따라 결정됩니다.
-
-모델의 여러 부분에서 복사 방지를 활성화 한 경우 유용합니다."
-SeparateByCopyProtection.success,Successfully separated by shape keys.,,성공적으로 쉐이프키별로 분리됐습니다.
 SeparateByX.error.noMesh,No meshes found!,,메쉬가 발견되지 않음!
 SeparateByX.error.multipleMesh,"Multiple meshes found!
 Please select the mesh you want to separate!",,"여러 메쉬들이 발견됨!
@@ -424,9 +386,6 @@ AttachMesh.desc,"Attaches the selected mesh to the selected bone of the selected
 INFO: The mesh will only be assigned to the selected bone.
 E.g.: A jacket won't work, because it requires multiple bones",,
 AttachMesh.success,Mesh successfully attached to armature.,,
-CustomModelTutorialButton.label,How to use,使用方法,사용법
-CustomModelTutorialButton.URL,https://github.com/michaeldegroot/cats-blender-plugin#custom-model-creation,,
-CustomModelTutorialButton.success,Documentation opened.,Documentation,
 merge_armatures.error.transformReset,"If you want to rotate the new part, only modify the mesh instead of the armature,
 or select ""Apply Transforms""!
 
@@ -437,10 +396,6 @@ merge_armatures.error.pleaseUndo,"Something went wrong! Please undo, check your 
 EnableSMC.label,Enable Material Combiner,マテリアルコンバイナを有効にする,매테리얼 통합기 활성화
 EnableSMC.desc,Enables Material Combiner,,
 EnableSMC.success,Enabled Material Combiner!,,
-AtlasHelpButton.label,Generate Material List,材料リストを生成する,매테리얼 목록 생성
-AtlasHelpButton.desc,Open useful Atlas Tips,,
-AtlasHelpButton.URL,https://github.com/michaeldegroot/cats-blender-plugin/#texture-atlas,,
-AtlasHelpButton.success,Atlas Help opened.,,
 InstallShotariya.label,Error while loading Material Combiner:,マテリアルコンバイナ読み込み中にエラーが発生しました:,매테리얼 통합기를 로드하는 중 오류 발생:
 InstallShotariya.error.install1,Material Combiner is not installed!,,
 InstallShotariya.error.install2,The plugin 'Material Combiner' by Shotariya is required for this function.,,
@@ -459,16 +414,6 @@ BoneMergeButton.desc,"Merges the given percentage of bones together.
 This is useful to reduce the amount of bones used by Dynamic Bones.",,
 BoneMergeButton.success,Merged bones.,,
 ShowError.label,Report: Error,レポート: エラー,
-CopyProtectionEnable.label,Enable Protection,保護を有効にする,보호 활성화
-CopyProtectionEnable.desc,"Protects your model from piracy. NOT a 100% safe protection!
-Read the documentation before use",,
-CopyProtectionEnable.success,Model secured!,,
-CopyProtectionDisable.label,Disable Protection,保護を無効にする,보호 비활성화
-CopyProtectionDisable.desc,Removes the copy protections from this model.,,
-CopyProtectionDisable.success,Model un-secured!,,
-ProtectionTutorialButton.label,Go to Documentation,ドキュメントに移動,문서로 이동
-ProtectionTutorialButton.URL,https://github.com/michaeldegroot/cats-blender-plugin#copy-protection,,
-ProtectionTutorialButton.success,Documentation,,
 ForumButton.label,Go to the Forums,フォーラムに移動する,포럼으로 가기
 ForumButton.URL,https://vrcat.club/threads/cats-blender-plugin.6/,,
 ForumButton.success,Forum opened.,,
@@ -505,24 +450,6 @@ decimate.disableFingers,or disable 'Save Fingers'.,,
 decimate.noDecimationNeeded,The model already has less than {number} tris. Nothing had to be decimated.,,
 decimate.cantDecimate1,The model could not be decimated to {number} tris.,,
 decimate.cantDecimate2,It got decimated as much as possible within the limits.,,
-CreateEyesButton.label,Create Eye Tracking,アイトラッキングを作成する,눈 추적(Eye Tracking) 생성
-CreateEyesButton.desc,"This will let you track someone when they come close to you and it enables blinking.
-You should do decimation before this operation.
-Test the resulting eye movement in the 'Testing' tab.",,"누군가가 가까이 왔을 때 그 사람을 추적 할 수 있고 눈 깜박임을 가능하게합니다.
-데시메이션이 필요하다면 이 작업 이전에 해야합니다.
-눈 움직임을 'Testing' 탭에서 테스트하세요."
-CreateEyesButton.error.noShapeSelected,"You have no shape keys selected.
-Please choose a mesh containing shape keys or check ""Disable Eye Blinking"".",,"선택된 쉐이프키가 없습니다.
-쉐이프키가 포함 된 메쉬를 선택하거나 ""눈 깜빡임 비활성화""에 체크하세요."
-CreateEyesButton.error.missingBone,"The bone ""{bone}"" does not exist.",,
-CreateEyesButton.error.noVertex,"The bone ""{bone}"" has no existing vertex group or no vertices assigned to it.
-This might be because you selected the wrong mesh or the wrong bone.
-Also make sure that the selected eye bones actually move the eyes in pose mode.",,
-CreateEyesButton.error.dontUse,"Please do not use ""{eyeName}"" as the input bone.
-If you are sure that you want to use that bone please rename it to ""{eyeNameShort}"".",,
-CreateEyesButton.error.hierarchy,"Eye tracking will not work unless the bone hierarchy is exactly as following: Hips > Spine > Chest > Neck > Head
-Furthermore the mesh containing the eyes has to be called ""Body"" and the armature ""Armature"".",,
-CreateEyesButton.success,Created eye tracking!,,
 StartTestingButton.label,Start Eye Testing,スタートアイテスト,눈 움직임 테스트 시작
 StartTestingButton.desc,"This will let you test how the eye movement will look ingame.
 Don't forget to stop the Testing process afterwards.
@@ -583,8 +510,6 @@ ZipPopup.selectModel2,Then confirm with OK,,
 get_zip_content.choose,"Import model ""{model}"" from the zip ""{zipName}?""",,
 ModelsPopup.label,Select which you want to import:,インポートする項目を選択します:,불러올 형식을 선택:
 ModelsPopup.desc,Show individual import options,,
-ImportMMD.label,MMD,,
-ImportMMD.desc,Import a MMD model (.pmx/pmd),,
 ImportXPS.label,XNALara,,
 ImportXPS.desc,Import a XNALara model (.xps/.mesh/.ascii),,
 ImportSource.label,Source,,
@@ -600,9 +525,6 @@ InstallX.pleaseInstall1,If it is not enabled please enable it in your User Prefe
 InstallX.pleaseInstall2,If it is not installed please download and install it manually.,,
 InstallX.pleaseInstall3,Make sure to install the version for Blender {blenderVersion},,
 InstallX.pleaseInstallTesting,Currently you have to select 'Testing' in the addons settings.,,
-EnableMMD.label,Mmd_tools is not enabled!,Mmd_toolsが有効になっていません!,Mmd_tools가 활성화되지 않음!
-EnableMMD.required1,"The plugin ""mmd_tools"" is required for this function.",,
-EnableMMD.required2,Please restart Blender.,,
 XpsToolsButton.label,Download XPS Tools,XPSツールをダウンロード,XPS Tools 다운로드
 XpsToolsButton.URL,https://github.com/johnzero7/XNALaraMesh,,
 XpsToolsButton.success,XPS Tools link opened,,
@@ -640,12 +562,6 @@ ErrorDisplay.textures1,No textures found!,,
 ErrorDisplay.textures2,This model has no textures assigned but you have 'Embed Textures' enabled.,,
 ErrorDisplay.textures3,"Therefore, no textures will be embedded into the FBX.",,
 ErrorDisplay.textures4,"This is not an issue, but you will have to import the textures manually into Unity.",,
-ErrorDisplay.eyes1,Eyes not named 'Body'!,,
-ErrorDisplay.eyes2,The mesh '{name}' has Eye Tracking shapekeys but is not named 'Body'.,,
-ErrorDisplay.eyes2_alt,Multiple meshes have Eye Tracking shapekeys but are not named 'Body'.,,
-ErrorDisplay.eyes3,"If you want Eye Tracking to work, rename this mesh to 'Body'.",,
-ErrorDisplay.eyes3_alt,Make sure that the mesh containing the eyes is named 'Body' in order,,
-ErrorDisplay.eyes4_alt,to get Eye Tracking to work.,,
 ErrorDisplay.continue,Continue to Export,,
 OneTexPerMatButton.label,One Material Texture,1つのマテリアルテクスチャ,매테리얼당 하나의 텍스처
 OneTexPerMatButton.desc,Have all material slots ignore extra texture slots as these are not used by VRChat.,,
@@ -709,11 +625,6 @@ addToShapekeyMenu.ShapeKeyApplier.label,Apply Selected Shapekey to Basis,選択�
 PatreonButton.label,Become a Patron,パトロンになる,후원하기
 PatreonButton.URL,https://www.patreon.com/catsblenderplugin,,
 PatreonButton.success,Patreon page opened.,,
-ReloadButton.label,Reload List,リストを再読み込み,목록 새로고침
-ReloadButton.desc,Reloads the supporter list,,후원자 목록을 다시 불러옵니다
-DynamicPatronButton.label,Supporter Name,サポーター名,후원자 이름
-DynamicPatronButton.desc,This is an awesome supporter,,이것은 멋진 후원자입니다!
-register_dynamic_buttons.desc,{name} is an awesome supporter,,{name}는 멋진 후원자입니다!
 TranslateShapekeyButton.label,Translate Shape Keys,シェイプキーを翻訳する,쉐이프키 이름 번역
 TranslateShapekeyButton.desc,Translates all shape keys using the internal dictionary and Google Translate into English,Translates all shape keys using the internal dictionary and Google Translate,모든 쉐이프키들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateShapekeyButton.success,Translated {number} shape keys.,,{number}개의 쉐이프키들이 번역되었습니다.
@@ -1190,10 +1101,6 @@ cats_bake.error.no_meshes,No meshes found!,,메쉬가 발견되지 않음!
 cats_bake.error.render_engine,You need to set your render engine to Cycles first!,,
 cats_bake.error.render_disabled,One or more of your armature's meshes have rendering disabled!,,
 cats_bake.info.success,Success! Textures and model saved to 'CATS Bake' folder next to your .blend file.,,
-cats_bake.tutorial_button.label,How to use,,사용법
-cats_bake.tutorial_button.desc,This will open the Cats wiki page for the Bake panel,,
-cats_bake.tutorial_button.URL,https://github.com/GiveMeAllYourCats/cats-blender-plugin/wiki/Bake,,
-cats_bake.tutorial_button.success,Bake Tutorial opened.,,
 CheckForUpdateButton.label,Check now for Update,今すぐアップデートを確認,업데이트 체크
 CheckForUpdateButton.desc,Checks if a new update is available for CATS,,
 UpdateToLatestButton.label,Update Now,今すぐアップデート,지금 업데이트

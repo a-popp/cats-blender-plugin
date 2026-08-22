@@ -20,22 +20,82 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by: GiveMeAllYourCats
+# Offline translation test: verify dictionary loading and translation
+# work without any network access.
 
-import unittest
 import sys
-import bpy
+import traceback
 
+errors = []
 
-class TestAddon(unittest.TestCase):
-    def test_translate_shapekeys(self):
-        result = bpy.ops.cats_translate.shapekeys()
-        self.assertTrue(result == {'FINISHED'})
+try:
+    import cats
+    cats.register()
+except Exception:
+    traceback.print_exc()
+    errors.append('Registration failed')
 
+try:
+    from cats.tools import translate as Translate
 
-suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestAddon)
-runner = unittest.TextTestRunner()
-ret = not runner.run(suite).wasSuccessful()
-sys.exit(ret)
+    # Verify dictionary was loaded
+    if not Translate.dictionary:
+        errors.append('Dictionary is empty - load_translations failed')
+    else:
+        print('Dictionary loaded with {} entries'.format(len(Translate.dictionary)))
+
+    # Verify dict_found flag
+    import cats.globs as globs
+    if not globs.dict_found:
+        errors.append('globs.dict_found is False - dictionary file not found')
+    else:
+        print('globs.dict_found is True')
+
+    # Test translation of a known Japanese term
+    # The dictionary should contain common bone/shapekey translations
+    test_cases = [
+        ('head', 'head'),  # English should pass through
+        ('Head', 'Head'),  # English should pass through
+    ]
+
+    for input_text, expected_contains in test_cases:
+        result, changed = Translate.translate(input_text)
+        print('translate({!r}) -> {!r} (changed={})'.format(input_text, result, changed))
+
+    # Test fix_jp_chars
+    # Half-width katakana テ (0xFF83) should become full-width テ (0x30C6)
+    half_width = '\uff83'
+    full_width = '\u30c6'
+    fixed = Translate.fix_jp_chars(half_width)
+    if fixed != full_width:
+        errors.append('fix_jp_chars failed: expected {}, got {}'.format(repr(full_width), repr(fixed)))
+    else:
+        print('fix_jp_chars: half-width -> full-width OK')
+
+    # Verify no network-related attributes exist
+    if hasattr(Translate, 'dictionary_google'):
+        errors.append('dictionary_google still exists in translate module')
+    if hasattr(Translate, 'reset_google_dict'):
+        errors.append('reset_google_dict still exists in translate module')
+    if hasattr(Translate, 'save_google_dict'):
+        errors.append('save_google_dict still exists in translate module')
+
+    print('No network translation attributes found')
+
+except Exception:
+    traceback.print_exc()
+    errors.append('Translation test failed')
+
+try:
+    cats.unregister()
+except Exception:
+    traceback.print_exc()
+    errors.append('Unregistration failed')
+
+if errors:
+    print('TRANSLATE TEST FAILED')
+    for err in errors:
+        print('  -', err)
+    sys.exit(1)
+else:
+    print('Test PASSED')

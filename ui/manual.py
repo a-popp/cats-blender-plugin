@@ -3,7 +3,6 @@ import bpy
 from .. import globs
 from .main import ToolPanel
 from .main import layout_split
-from ..tools import supporter
 from ..tools import translate as Translate
 from ..tools import armature_manual as Armature_manual
 from ..tools.register import register_wrap
@@ -52,10 +51,6 @@ class ManualPanel(ToolPanel, bpy.types.Panel):
         col.separator()
         row = col.row(align=True)
         row.label(text=t('ManualPanel.translate'), icon='FILE_REFRESH')
-
-        row = col.row(align=True)
-        row.scale_y = button_height
-        row.prop(context.scene, 'use_google_only')
 
         split = layout_split(col, factor=0.27, align=True)
 
@@ -137,7 +132,3 @@ class ManualPanel(ToolPanel, bpy.types.Panel):
                 row = col.row(align=True)
                 row.scale_y = button_height
                 row.operator(Armature_manual.TestButton.bl_idname)
-
-            # row = col.row(align=True)
-            # row.scale_y = button_height
-            # row.operator(Armature_manual.SeparateByCopyProtection.bl_idname, icon='SHAPEKEY_DATA')

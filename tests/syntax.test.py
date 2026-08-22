@@ -20,27 +20,72 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Code author: GiveMeAllYourCats
-# Repo: https://github.com/michaeldegroot/cats-blender-plugin
-# Edits by: GiveMeAllYourCats
+# Syntax test: compile all Python files in the addon and verify no imports
+# reference deleted modules.
 
-import unittest
+import os
+import py_compile
 import sys
 
+addon_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-class TestAddon(unittest.TestCase):
-    def test_syntax_check(self):
-        try:
-            import cats
-        except SyntaxError as e:
-            return self.fail('SyntaxError in plugin found!')
+errors = []
+compiled = 0
 
-    def test_bl_info(self):
-        import cats
-        self.assertIsNotNone(cats.bl_info)
+# Collect all .py files in the addon
+py_files = []
+for root, dirs, files in os.walk(addon_dir):
+    # Skip tests directory, build artifacts, .git
+    if '.git' in root or 'build' in root or os.sep + 'tests' in root:
+        continue
+    for f in files:
+        if f.endswith('.py'):
+            py_files.append(os.path.join(root, f))
 
+for py_file in py_files:
+    try:
+        py_compile.compile(py_file, doraise=True)
+        compiled += 1
+    except py_compile.PyCompileError as e:
+        errors.append(str(e))
 
-suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestAddon)
-runner = unittest.TextTestRunner()
-ret = not runner.run(suite).wasSuccessful()
-sys.exit(ret)
+# Check for references to deleted modules
+deleted_modules = [
+    'mmd_tools_local',
+    'google_trans_new',
+    'extern_tools',
+    'tools.supporter',
+    'tools.copy_protection',
+    'tools.eyetracking',
+    'tools.credits',
+    'tools.atlas',
+    'tools.importer',
+    'tools.fbx_patch',
+    'tools.armature',
+    'ui.supporter',
+    'ui.copy_protection',
+    'ui.eye_tracking',
+    'ui.credits',
+    'ui.bone_root',
+    'ui.settings_updates',
+]
+
+for py_file in py_files:
+    with open(py_file, 'r', encoding='utf-8', errors='replace') as f:
+        content = f.read()
+    for mod in deleted_modules:
+        if 'import ' + mod in content or 'from ' + mod in content:
+            # Allow comments
+            for line in content.split('\n'):
+                if ('import ' + mod in line or 'from ' + mod in line) and not line.strip().startswith('#'):
+                    errors.append('Forbidden import in {}: {}'.format(py_file, line.strip()))
+
+if errors:
+    print('SYNTAX TEST FAILED')
+    for err in errors:
+        print('  -', err)
+    sys.exit(1)
+else:
+    print('Ran syntax test')
+    print('Compiled {} files successfully'.format(compiled))
+    print('Test PASSED')

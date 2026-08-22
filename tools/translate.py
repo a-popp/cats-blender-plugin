@@ -29,30 +29,21 @@ import bpy
 import copy
 import json
 import pathlib
-import platform
 import traceback
 import collections
-import requests.exceptions
 
-from datetime import datetime, timezone
 from collections import OrderedDict
 
 from . import common as Common
 from .register import register_wrap
 from .. import globs
-# from ..googletrans import Translator  # TODO Remove this
-from ..extern_tools.google_trans_new.google_trans_new import google_translator
 from .translations import t
 
-from mmd_tools_local import translations as mmd_translations
-
 dictionary = {}
-dictionary_google = {}
 
 main_dir = pathlib.Path(os.path.dirname(__file__)).parent.resolve()
 resources_dir = os.path.join(str(main_dir), "resources")
 dictionary_file = os.path.join(resources_dir, "dictionary.json")
-dictionary_google_file = os.path.join(resources_dir, "dictionary_google.json")
 
 
 @register_wrap
@@ -201,54 +192,6 @@ class TranslateMaterialsButton(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# @register_wrap
-# class TranslateTexturesButton(bpy.types.Operator):
-#     bl_idname = 'cats_translate.textures'
-#     bl_label = t('TranslateTexturesButton.label')
-#     bl_description = t('TranslateTexturesButton.desc')
-#     bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-#
-#     def execute(self, context):
-#         # It currently seems to do nothing. This should probably only added when the folder textures really get translated. Currently only the materials are important
-#         self.report({'INFO'}, t('TranslateTexturesButton.success_alt'))
-#         return {'FINISHED'}
-#
-#         translator = google_translator()
-#
-#         to_translate = []
-#         for ob in Common.get_objects():
-#             if ob.type == 'MESH':
-#                 for matslot in ob.material_slots:
-#                     for texslot in bpy.data.materials[matslot.name].texture_slots:
-#                         if texslot:
-#                             print(texslot.name)
-#                             to_translate.append(texslot.name)
-#
-#         translated = []
-#         try:
-#             translations = translator.translate(to_translate, lang_tgt='en')
-#         except SSLError:
-#             self.report({'ERROR'}, t('TranslateTexturesButton.error.noInternet'))
-#             return {'FINISHED'}
-#
-#         for translation in translations:
-#             translated.append(translation)
-#
-#         i = 0
-#         for ob in Common.get_objects():
-#             if ob.type == 'MESH':
-#                 for matslot in ob.material_slots:
-#                     for texslot in bpy.data.materials[matslot.name].texture_slots:
-#                         if texslot:
-#                             bpy.data.textures[texslot.name].name = translated[i]
-#                             i += 1
-#
-#         Common.unselect_all()
-#
-#         self.report({'INFO'}, t('TranslateTexturesButton.success', number=str(i)))
-#         return {'FINISHED'}
-
-
 @register_wrap
 class TranslateAllButton(bpy.types.Operator):
     bl_idname = 'cats_translate.all'
@@ -306,7 +249,6 @@ def load_translations():
         with open(dictionary_file, encoding="utf8") as file:
             temp_dict = json.load(file, object_pairs_hook=collections.OrderedDict)
             dict_found = True
-            # print('DICTIONARY LOADED!')
     except FileNotFoundError:
         print('DICTIONARY NOT FOUND!')
         pass
@@ -314,186 +256,29 @@ def load_translations():
         print("ERROR FOUND IN DICTIONARY")
         pass
 
-    # Load local google dictionary and add it to the temp dict
-    try:
-        with open(dictionary_google_file, encoding="utf8") as file:
-            global dictionary_google
-            dictionary_google = json.load(file, object_pairs_hook=collections.OrderedDict)
-
-            if 'created' not in dictionary_google \
-                    or 'translations' not in dictionary_google \
-                    or 'translations_full' not in dictionary_google:
-                reset_google_dict()
-            else:
-                for name, trans in dictionary_google.get('translations').items():
-                    if not name:
-                        continue
-
-                    if name in temp_dict.keys():
-                        print(name, 'ALREADY IN INTERNAL DICT!')
-                        continue
-
-                    temp_dict[name] = trans
-
-            # print('GOOGLE DICTIONARY LOADED!')
-    except FileNotFoundError:
-        print('GOOGLE DICTIONARY NOT FOUND!')
-        reset_google_dict()
-        pass
-    except json.decoder.JSONDecodeError:
-        print("ERROR FOUND IN GOOOGLE DICTIONARY")
-        reset_google_dict()
-        pass
-
-    # Sort temp dictionary by lenght and put it into the global dict
+    # Sort temp dictionary by length and put it into the global dict
     for key in sorted(temp_dict, key=lambda k: len(k), reverse=True):
         dictionary[key] = temp_dict[key]
-
-    # for key, value in dictionary.items():
-    #     print('"' + key + '" - "' + value + '"')
 
     return dict_found
 
 
 def update_dictionary(to_translate_list, translating_shapes=False, self=None):
-    global dictionary, dictionary_google
-    regex = u'[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+'  # Regex to look for japanese chars
-
-    use_google_only = False
-    if translating_shapes and bpy.context.scene.use_google_only:
-        use_google_only = True
+    global dictionary
 
     # Check if single string is given and put it into an array
     if type(to_translate_list) is str:
         to_translate_list = [to_translate_list]
 
-    google_input = []
-
-    # Translate everything
+    # Translate everything using the offline dictionary only
     for to_translate in to_translate_list:
-        length = len(to_translate)
-        translated_count = 0
-
         to_translate = fix_jp_chars(to_translate)
 
-        # Translate shape keys with Google Translator only, if the user chose this
-        if use_google_only:
-            # If name doesn't contain any jp chars, don't translate
-            if not re.findall(regex, to_translate):
-                continue
+        for key, value in dictionary.items():
+            if key in to_translate:
+                if value:
+                    to_translate = to_translate.replace(key, value)
 
-            translated = False
-            for key, value in dictionary_google.get('translations_full').items():
-                if to_translate == key and value:
-                    translated = True
-
-            if not translated:
-                google_input.append(to_translate)
-
-        # Translate with internal dictionary
-        else:
-            for key, value in dictionary.items():
-                if key in to_translate:
-                    if value:
-                        to_translate = to_translate.replace(key, value)
-                    else:
-                        continue
-
-                    # Check if string is fully translated
-                    translated_count += len(key)
-                    if translated_count >= length:
-                        break
-
-            # If not fully translated, translate the rest with Google
-            if translated_count < length:
-                match = re.findall(regex, to_translate)
-                if match:
-                    for name in match:
-                        if name not in google_input and name not in dictionary.keys():
-                            google_input.append(name)
-
-    if not google_input:
-        # print('NO GOOGLE TRANSLATIONS')
-        return
-
-    # Translate the rest with google translate
-    print('GOOGLE DICT UPDATE!')
-    translator = google_translator(url_suffix='com')
-    token_tries = 0
-    while True:
-        try:
-            translations = [translator.translate(text, lang_src='ja', lang_tgt='en').strip() for text in google_input]
-            break
-        except (requests.exceptions.ConnectionError, ConnectionRefusedError):
-            print('CONNECTION TO GOOGLE FAILED!')
-            if self:
-                self.report({'ERROR'}, t('update_dictionary.error.cantConnect'))
-            return
-        except json.JSONDecodeError:
-            if self:
-                self.report({'ERROR'}, t('update_dictionary.error.temporaryBan') + t('update_dictionary.error.catsTranslated'))
-            print('YOU GOT BANNED BY GOOGLE!')
-            return
-        except RuntimeError as e:
-            error = Common.html_to_text(str(e))
-            if self:
-                if 'Please try your request again later' in error:
-                    self.report({'ERROR'}, t('update_dictionary.error.temporaryBan') + t('update_dictionary.error.catsTranslated'))
-                    print('YOU GOT BANNED BY GOOGLE!')
-                    return
-
-                if 'Error 403' in error:
-                    self.report({'ERROR'}, t('update_dictionary.error.cantAccess') + t('update_dictionary.error.catsTranslated'))
-                    print('NO PERMISSION TO USE GOOGLE TRANSLATE!')
-                    return
-
-                self.report({'ERROR'}, t('update_dictionary.error.errorMsg') + t('update_dictionary.error.catsTranslated') + '\n' + '\nGoogle: ' + error)
-            print('', 'You got an error message from Google:', error, '')
-            return
-        except AttributeError:
-            # If the translator wasn't able to create a stable connection to Google, just retry it again
-            # This is an issue with Google since Nov 2020: https://github.com/ssut/py-googletrans/issues/234
-            token_tries += 1
-            if token_tries < 3:
-                print('RETRY', token_tries)
-                translator = google_translator(url_suffix='com')
-                continue
-
-            # If if didn't work after 20 tries, just quit
-            # The response from Google was printed into "cats/resources/google-response.txt"
-            if self:
-                self.report({'ERROR'}, t('update_dictionary.error.apiChanged'))
-            print('ERROR: GOOGLE API CHANGED!')
-            print(traceback.format_exc())
-            return
-
-    # Update the dictionaries
-    for i, translation in enumerate(translations):
-        name = google_input[i]
-
-        if use_google_only:
-            dictionary_google['translations_full'][name] = translation
-        else:
-            # Capitalize words
-            translation_words = translation.split(' ')
-            translation_words = [word.capitalize() for word in translation_words]
-            translation = ' '.join(translation_words)
-
-            dictionary[name] = translation
-            dictionary_google['translations'][name] = translation
-
-        print(google_input[i], '->', translation)
-
-    # Sort dictionary
-    temp_dict = copy.deepcopy(dictionary)
-    dictionary = OrderedDict()
-    for key in sorted(temp_dict, key=lambda k: len(k), reverse=True):
-        dictionary[key] = temp_dict[key]
-
-    # Save the google dict locally
-    save_google_dict()
-
-    print('DICTIONARY UPDATE SUCCEEDED!')
     return
 
 
@@ -504,11 +289,6 @@ def translate(to_translate, add_space=False, translating_shapes=False):
     length = len(to_translate)
     translated_count = 0
 
-    # Figure out whether to use google only or not
-    use_google_only = False
-    if translating_shapes and bpy.context.scene.use_google_only:
-        use_google_only = True
-
     # Add space for shape keys
     addition = ''
     if add_space:
@@ -517,83 +297,45 @@ def translate(to_translate, add_space=False, translating_shapes=False):
     # Convert half chars into full chars
     to_translate = fix_jp_chars(to_translate)
 
-    # Translate shape keys with Google Translator only, if the user chose this
-    if use_google_only:
-        for key, value in dictionary_google.get('translations_full').items():
-            if to_translate == key and value:
-                to_translate = value
-
     # Translate with internal dictionary
-    else:
-        for key, value in dictionary.items():
-            if key in to_translate:
-                # If string is empty, don't replace it. This will be done at the end
-                if not value:
-                    continue
+    for key, value in dictionary.items():
+        if key in to_translate:
+            # If string is empty, don't replace it. This will be done at the end
+            if not value:
+                continue
 
-                to_translate = to_translate.replace(key, addition + value)
+            to_translate = to_translate.replace(key, addition + value)
 
-                # Check if string is fully translated
-                translated_count += len(key)
-                if translated_count >= length:
-                    break
+            # Check if string is fully translated
+            translated_count += len(key)
+            if translated_count >= length:
+                break
 
     to_translate = to_translate.replace('.L', '_L').replace('.R', '_R').replace('  ', ' ').replace('し', '').replace('っ', '').strip()
-
-    # print('"' + pre_translation + '"')
-    # print('"' + to_translate + '"')
 
     return to_translate, pre_translation != to_translate
 
 
+# Half-width to full-width Japanese character mapping
+_jp_half_to_full = {
+    0xFF61: 0x3002, 0xFF62: 0x300C, 0xFF63: 0x300D, 0xFF64: 0x3001,
+    0xFF65: 0x30FB, 0xFF66: 0x30F2, 0xFF67: 0x30A1, 0xFF68: 0x30A3,
+    0xFF69: 0x30A5, 0xFF6A: 0x30A7, 0xFF6B: 0x30A9, 0xFF6C: 0x30E3,
+    0xFF6D: 0x30E5, 0xFF6E: 0x30E7, 0xFF6F: 0x30C3, 0xFF70: 0x30FC,
+    0xFF71: 0x30A2, 0xFF72: 0x30A4, 0xFF73: 0x30A6, 0xFF74: 0x30A8,
+    0xFF75: 0x30AA, 0xFF76: 0x30AB, 0xFF77: 0x30AD, 0xFF78: 0x30AF,
+    0xFF79: 0x30B1, 0xFF7A: 0x30B3, 0xFF7B: 0x30B5, 0xFF7C: 0x30B7,
+    0xFF7D: 0x30B9, 0xFF7E: 0x30BB, 0xFF7F: 0x30BD, 0xFF80: 0x30BF,
+    0xFF81: 0x30C1, 0xFF82: 0x30C4, 0xFF83: 0x30C6, 0xFF84: 0x30C8,
+    0xFF85: 0x30CA, 0xFF86: 0x30CB, 0xFF87: 0x30CC, 0xFF88: 0x30CD,
+    0xFF89: 0x30CE, 0xFF8A: 0x30CF, 0xFF8B: 0x30D2, 0xFF8C: 0x30D5,
+    0xFF8D: 0x30D8, 0xFF8E: 0x30DB, 0xFF8F: 0x30DE, 0xFF90: 0x30DF,
+    0xFF91: 0x30E0, 0xFF92: 0x30E1, 0xFF93: 0x30E2, 0xFF94: 0x30E4,
+    0xFF95: 0x30E6, 0xFF96: 0x30E8, 0xFF97: 0x30E9, 0xFF98: 0x30EA,
+    0xFF99: 0x30EB, 0xFF9A: 0x30EC, 0xFF9B: 0x30ED, 0xFF9C: 0x30EF,
+    0xFF9D: 0x30F3, 0xFF9E: 0x309B, 0xFF9F: 0x309C,
+}
+
+
 def fix_jp_chars(name):
-    for values in mmd_translations.jp_half_to_full_tuples:
-        if values[0] in name:
-            name = name.replace(values[0], values[1])
-    return name
-
-
-def reset_google_dict():
-    global dictionary_google
-    dictionary_google = OrderedDict()
-
-    now_utc = datetime.now(timezone.utc).strftime(globs.time_format)
-
-    dictionary_google['created'] = now_utc
-    dictionary_google['translations'] = {}
-    dictionary_google['translations_full'] = {}
-
-    save_google_dict()
-    print('GOOGLE DICT RESET')
-
-
-def save_google_dict():
-    with open(dictionary_google_file, 'w', encoding="utf8") as outfile:
-        json.dump(dictionary_google, outfile, ensure_ascii=False, indent=4)
-
-# def cvs_to_json():
-#     temp_dict = OrderedDict()
-#
-#     # Load internal dictionary
-#     try:
-#         with open(dictionary_file, encoding="utf8") as file:
-#             data = csv.reader(file, delimiter=',')
-#             for row in data:
-#                 name = fix_jp_chars(str(row[0]))
-#                 translation = row[1]
-#
-#                 if translation.startswith(' "'):
-#                     translation = translation[2:-1]
-#                 if translation.startswith('"'):
-#                     translation = translation[1:-1]
-#
-#                 temp_dict[name] = translation
-#             print('DICTIONARY LOADED!')
-#     except FileNotFoundError:
-#         print('DICTIONARY NOT FOUND!')
-#         pass
-#
-#     # # Create json from cvs
-#     dictionary_file_new = os.path.join(resources_dir, "dictionary2.json")
-#     with open(dictionary_file_new, 'w', encoding="utf8") as outfile:
-#         json.dump(temp_dict, outfile, ensure_ascii=False, indent=4)
+    return name.translate(_jp_half_to_full)

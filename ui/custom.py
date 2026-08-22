@@ -3,7 +3,6 @@ import bpy
 from .main import ToolPanel
 from .. import globs
 from ..tools import common as Common
-from ..tools import supporter as Supporter
 from ..tools import armature_bones as Armature_bones
 from ..tools import armature_custom as Armature_custom
 from ..tools.register import register_wrap
@@ -20,10 +19,6 @@ class CustomPanel(ToolPanel, bpy.types.Panel):
         layout = self.layout
         box = layout.box()
         col = box.column(align=True)
-
-        row = col.row(align=True)
-        row.operator(Armature_custom.CustomModelTutorialButton.bl_idname, icon='FORWARD')
-        col.separator()
 
         row = col.row(align=True)
         row.prop(context.scene, 'merge_mode', expand=True)
@@ -63,7 +58,7 @@ class CustomPanel(ToolPanel, bpy.types.Panel):
             row.prop(context.scene, 'merge_armature_into', text=t('CustomPanel.mergeInto'), icon=globs.ICON_MOD_ARMATURE)
             row = col.row(align=True)
             row.scale_y = 1.05
-            row.prop(context.scene, 'merge_armature', text=t('CustomPanel.toMerge'), icon_value=Supporter.preview_collections["custom_icons"]["UP_ARROW"].icon_id)
+            row.prop(context.scene, 'merge_armature', text=t('CustomPanel.toMerge'), icon='TRIA_UP')
 
             if not context.scene.merge_same_bones:
                 found = False
@@ -111,7 +106,7 @@ class CustomPanel(ToolPanel, bpy.types.Panel):
             row.prop(context.scene, 'merge_armature_into', text=t('CustomPanel.mergeInto'), icon=globs.ICON_MOD_ARMATURE)
             row = col.row(align=True)
             row.scale_y = 1.05
-            row.prop(context.scene, 'attach_mesh', text=t('CustomPanel.attachMesh2'), icon_value=Supporter.preview_collections["custom_icons"]["UP_ARROW"].icon_id)
+            row.prop(context.scene, 'attach_mesh', text=t('CustomPanel.attachMesh2'), icon='TRIA_UP')
 
             row = col.row(align=True)
             row.scale_y = 1.05

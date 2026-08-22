@@ -19,10 +19,6 @@ class BakePanel(ToolPanel, bpy.types.Panel):
         box = layout.box()
         col = box.column(align=True)
 
-        row = col.row(align=True)
-        row.operator(Bake.BakeTutorialButton.bl_idname, icon='FORWARD')
-        col.separator()
-
         col.label(text=t('BakePanel.autodetectlabel'))
         row = col.row(align=True)
         row.operator(Bake.BakePresetDesktop.bl_idname, icon="ANTIALIASED")

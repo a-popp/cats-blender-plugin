@@ -28,7 +28,6 @@ import typing
 
 __bl_classes = []
 __bl_ordered_classes = []
-__make_annotations = (not bpy.app.version < (2, 79, 9))
 
 
 def register_wrap(cls):
@@ -39,15 +38,14 @@ def register_wrap(cls):
 
 
 def make_annotations(cls):
-    if __make_annotations:
-        bl_props = {k:v for k, v in cls.__dict__.items() if isinstance(v, bpy.props._PropertyDeferred)}
-        if bl_props:
-            if '__annotations__' not in cls.__dict__:
-                setattr(cls, '__annotations__', {})
-            annotations = cls.__dict__['__annotations__']
-            for k, v in bl_props.items():
-                annotations[k] = v
-                delattr(cls, k)
+    bl_props = {k:v for k, v in cls.__dict__.items() if isinstance(v, bpy.props._PropertyDeferred)}
+    if bl_props:
+        if '__annotations__' not in cls.__dict__:
+            setattr(cls, '__annotations__', {})
+        annotations = cls.__dict__['__annotations__']
+        for k, v in bl_props.items():
+            annotations[k] = v
+            delattr(cls, k)
     return cls
 
 

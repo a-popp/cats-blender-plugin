@@ -25,7 +25,6 @@
 
 import bpy
 import copy
-import webbrowser
 
 from . import common as Common
 from . import armature_bones as Bones
@@ -189,19 +188,6 @@ class AttachMesh(bpy.types.Operator):
         saved_data.load()
 
         self.report({'INFO'}, t('AttachMesh.success'))
-        return {'FINISHED'}
-
-
-@register_wrap
-class CustomModelTutorialButton(bpy.types.Operator):
-    bl_idname = 'cats_custom.tutorial'
-    bl_label = t('CustomModelTutorialButton.label')
-    bl_options = {'INTERNAL'}
-
-    def execute(self, context):
-        webbrowser.open(t('CustomModelTutorialButton.URL'))
-
-        self.report({'INFO'}, t('CustomModelTutorialButton.success'))
         return {'FINISHED'}
 
 
