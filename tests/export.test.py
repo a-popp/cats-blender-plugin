@@ -22,7 +22,10 @@
 
 # Export test: generate a simple armature+mesh, export via native FBX,
 # verify the file is created. Tests Blender 5.2 native FBX exporter
-# without the removed fbx_patch monkey-patching.
+# without the removed fbx_patch monkey-patching. Also exercises the
+# CATS export operator (cats_export.export_model) end-to-end with
+# action='NO_CHECK' to verify the operator path works without
+# referencing removed modules.
 
 import sys
 import os
@@ -106,6 +109,34 @@ try:
             errors.append('FBX file is suspiciously small: {} bytes'.format(file_size))
         # Clean up
         os.remove(fbx_path)
+
+    # Test the CATS export operator end-to-end (action='NO_CHECK' skips
+    # the warning dialog path, which requires a GUI and cannot run in
+    # background mode). This verifies the operator calls the native FBX
+    # exporter without referencing removed modules like cats_importer.
+    cats_fbx_path = os.path.join(tempfile.gettempdir(), 'cats_test_export_operator.fbx')
+    if os.path.exists(cats_fbx_path):
+        os.remove(cats_fbx_path)
+
+    try:
+        result = bpy.ops.cats_export.export_model(
+            'EXEC_DEFAULT',
+            action='NO_CHECK',
+            filepath=cats_fbx_path
+        )
+        print('CATS export operator completed: {}'.format(result))
+    except Exception as e:
+        errors.append('CATS export operator failed: {}'.format(e))
+        traceback.print_exc()
+
+    if not os.path.exists(cats_fbx_path):
+        errors.append('CATS export operator did not create FBX file at: ' + cats_fbx_path)
+    else:
+        file_size = os.path.getsize(cats_fbx_path)
+        print('CATS export FBX file created: {} ({} bytes)'.format(cats_fbx_path, file_size))
+        if file_size < 100:
+            errors.append('CATS export FBX file is suspiciously small: {} bytes'.format(file_size))
+        os.remove(cats_fbx_path)
 
     # Clean up scene
     bpy.ops.object.select_all(action='SELECT')

@@ -106,7 +106,7 @@ class ExportModel(bpy.types.Operator):
                     or len(_mat_list) > max_mats \
                     or len(_broken_shapes) > 0 \
                     or not _textures_found and Settings.get_embed_textures():
-                bpy.ops.cats_importer.display_error('INVOKE_DEFAULT')
+                bpy.ops.cats_export.display_error('INVOKE_DEFAULT')
                 return {'FINISHED'}
 
         # Check if textures are found and if they should be embedded

@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-compile:
+    name: Syntax & Compile Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Compile all Python files
+        run: |
+          python -m compileall -q .
+          if [ $? -ne 0 ]; then
+            echo "Compilation failed"
+            exit 1
+          fi
+          echo "All files compiled successfully"
+
+      - name: Check for forbidden imports
+        run: |
+          python - <<'EOF'
+          import os, sys, re
+
+          deleted_modules = [
+              'mmd_tools_local',
+              'google_trans_new',
+              'extern_tools',
+              'tools.supporter',
+              'tools.copy_protection',
+              'tools.eyetracking',
+              'tools.credits',
+              'tools.atlas',
+              'tools.importer',
+              'tools.fbx_patch',
+              'tools.armature',
+              'ui.supporter',
+              'ui.copy_protection',
+              'ui.eye_tracking',
+              'ui.credits',
+              'ui.bone_root',
+              'ui.settings_updates',
+          ]
+
+          removed_operator_categories = [
+              'cats_importer',
+              'cats_supporter',
+              'cats_eyetracking',
+              'cats_credits',
+              'cats_atlas',
+              'cats_copy_protection',
+          ]
+
+          errors = []
+          for root, dirs, files in os.walk('.'):
+              if '.git' in root or 'build' in root:
+                  continue
+              for f in files:
+                  if not f.endswith('.py'):
+                      continue
+                  path = os.path.join(root, f)
+                  with open(path, 'r', encoding='utf-8', errors='replace') as fh:
+                      for i, line in enumerate(fh, 1):
+                          stripped = line.strip()
+                          if stripped.startswith('#'):
+                              continue
+                          for mod in deleted_modules:
+                              if re.search(r'\b(import|from)\s+' + re.escape(mod), line):
+                                  errors.append(f'{path}:{i}: {stripped}')
+                          for cat in removed_operator_categories:
+                              if 'bpy.ops.' + cat in line:
+                                  errors.append(f'{path}:{i}: {stripped}')
+
+          if errors:
+              for e in errors:
+                  print(f'  - {e}')
+              sys.exit(1)
+          print('No forbidden imports found')
+          EOF
+
+  blender-tests:
+    name: Blender 5.2 Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install Blender 5.2
+        run: |
+          wget -q https://download.blender.org/release/Blender5.2/blender-5.2.0-linux-x64.tar.xz
+          tar -xf blender-5.2.0-linux-x64.tar.xz
+          mv blender-5.2.0-linux-x64 /opt/blender
+          echo "/opt/blender" >> $GITHUB_PATH
+
+      - name: Validate extension manifest
+        run: |
+          blender --background --factory-startup --command extension validate .
+
+      - name: Build extension package
+        run: |
+          mkdir -p build
+          blender --background --factory-startup --command extension build --source-dir . --output-dir build/
+          ls -la build/
+
+      - name: Run syntax test
+        run: |
+          python tests/run.py -b blender -t syntax -c true -v true
+
+      - name: Run registration test
+        run: |
+          python tests/run.py -b blender -t registration -c true -v true
+
+      - name: Run translate test
+        run: |
+          python tests/run.py -b blender -t translate -c true -v true
+
+      - name: Run viseme test
+        run: |
+          python tests/run.py -b blender -t viseme -c true -v true
+
+      - name: Run bone merging test
+        run: |
+          python tests/run.py -b blender -t bonemerging -c true -v true
+
+      - name: Run bone parenting test
+        run: |
+          python tests/run.py -b blender -t boneparenting -c true -v true
+
+      - name: Run material test
+        run: |
+          python tests/run.py -b blender -t material -c true -v true
+
+      - name: Run export test
+        run: |
+          python tests/run.py -b blender -t export -c true -v true
+
+      - name: Upload extension package
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v7
+        with:
+          name: cats-blender-plugin-extension
+          path: build/*.zip

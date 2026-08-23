@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # Syntax test: compile all Python files in the addon and verify no imports
-# reference deleted modules.
+# or bpy.ops calls reference deleted modules.
 
 import os
 import py_compile
@@ -70,6 +70,17 @@ deleted_modules = [
     'ui.settings_updates',
 ]
 
+# Removed operator categories (from deleted modules). These bpy.ops
+# categories no longer exist and any call to them will fail at runtime.
+removed_operator_categories = [
+    'cats_importer',
+    'cats_supporter',
+    'cats_eyetracking',
+    'cats_credits',
+    'cats_atlas',
+    'cats_copy_protection',
+]
+
 for py_file in py_files:
     with open(py_file, 'r', encoding='utf-8', errors='replace') as f:
         content = f.read()
@@ -79,6 +90,11 @@ for py_file in py_files:
             for line in content.split('\n'):
                 if ('import ' + mod in line or 'from ' + mod in line) and not line.strip().startswith('#'):
                     errors.append('Forbidden import in {}: {}'.format(py_file, line.strip()))
+    for cat in removed_operator_categories:
+        if 'bpy.ops.' + cat in content:
+            for line in content.split('\n'):
+                if 'bpy.ops.' + cat in line and not line.strip().startswith('#'):
+                    errors.append('Reference to removed operator category in {}: {}'.format(py_file, line.strip()))
 
 if errors:
     print('SYNTAX TEST FAILED')
