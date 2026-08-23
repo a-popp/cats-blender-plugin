@@ -51,16 +51,29 @@ try:
     else:
         print('globs.dict_found is True')
 
-    # Test translation of a known Japanese term
-    # The dictionary should contain common bone/shapekey translations
+    # Test translation of known terms from the offline dictionary.
+    # The dictionary (resources/dictionary.json) maps Japanese bone/shapekey
+    # names to English. We test:
+    # 1. A real Japanese-to-English translation (頭 -> Head)
+    # 2. English passthrough (no change, changed=False)
+    # 3. A compound name containing a Japanese term (頭.L -> Head_L)
     test_cases = [
-        ('head', 'head'),  # English should pass through
-        ('Head', 'Head'),  # English should pass through
+        # (input, expected_output, expected_changed)
+        ('\u982d', 'Head', True),          # 頭 -> Head
+        ('head', 'head', False),           # English passthrough
+        ('Head', 'Head', False),           # English passthrough
+        ('\u982d.L', 'Head_L', True),      # 頭.L -> Head_L (.L -> _L replacement)
+        ('\u53e3', 'Mouth', True),         # 口 -> Mouth
+        ('\u76ee', 'Eye', True),           # 目 -> Eye
     ]
 
-    for input_text, expected_contains in test_cases:
+    for input_text, expected_output, expected_changed in test_cases:
         result, changed = Translate.translate(input_text)
         print('translate({!r}) -> {!r} (changed={})'.format(input_text, result, changed))
+        if result != expected_output:
+            errors.append('translate({!r}) returned {!r}, expected {!r}'.format(input_text, result, expected_output))
+        if changed != expected_changed:
+            errors.append('translate({!r}) changed={}, expected {}'.format(input_text, changed, expected_changed))
 
     # Test fix_jp_chars
     # Half-width katakana テ (0xFF83) should become full-width テ (0x30C6)

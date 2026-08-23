@@ -1290,7 +1290,11 @@ def sort_shape_keys(mesh_name, shape_key_order=None):
                 if 0 <= index_diff <= (new_index - 1):
                     while position_correct is False:
                         if mesh.active_shape_key_index != new_index:
+                            prev_index = mesh.active_shape_key_index
                             bpy.ops.object.shape_key_move(type='UP')
+                            # Safety: break if the shape key can't move further
+                            if mesh.active_shape_key_index == prev_index:
+                                break
                         else:
                             position_correct = True
                 else:
@@ -1300,7 +1304,11 @@ def sort_shape_keys(mesh_name, shape_key_order=None):
                     position_correct = False
                     while position_correct is False:
                         if mesh.active_shape_key_index != new_index:
+                            prev_index = mesh.active_shape_key_index
                             bpy.ops.object.shape_key_move(type='DOWN')
+                            # Safety: break if the shape key can't move further
+                            if mesh.active_shape_key_index == prev_index:
+                                break
                         else:
                             position_correct = True
 

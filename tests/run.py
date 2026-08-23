@@ -92,7 +92,10 @@ def print_output(raw, output):
     try:
         print(output)
     except UnicodeEncodeError:
-        print(raw)
+        # Console encoding can't handle some characters (e.g. Japanese on
+        # Windows cp1252). Replace unencodable characters instead of crashing.
+        encoding = sys.stdout.encoding or 'utf-8'
+        print(output.encode(encoding, errors='replace').decode(encoding, errors='replace'))
 
 
 # Iterate over each *.test.py file in the 'tests' directory.

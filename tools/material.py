@@ -178,7 +178,12 @@ class CombineMaterialsButton(bpy.types.Operator):
         Common.set_active(ob_active)
 
     def cleanmatslots(self):
+        # Use the active object directly — bpy.context.selected_editable_objects
+        # can be empty in background mode even when the object is selected.
+        active = bpy.context.active_object
         objs = bpy.context.selected_editable_objects
+        if active and active not in objs:
+            objs = list(objs) + [active]
 
         for ob in objs:
             if ob.type == 'MESH':
