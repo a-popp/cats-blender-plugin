@@ -53,36 +53,35 @@ try:
     for bone in armature_obj.data.edit_bones:
         armature_obj.data.edit_bones.remove(bone)
 
-    # Create hierarchy: root -> spine -> chest -> head
-    root = armature_obj.data.edit_bones.new('root')
-    root.head = (0, 0, 0)
-    root.tail = (0, 0, 0.5)
+    # Create hierarchy: Pelvis with two similar sibling bones (Tail_01,
+    # Tail_02) that get_parent_root_bones groups together, each with a
+    # child bone that the merge operator merges into its parent.
+    # NOTE: 'finger', 'chest', 'leg', 'spine', 'head', etc. are on the
+    # ignore list of get_parent_root_bones, so a fixture using those names
+    # produces an empty group list and silently skips the merge.
+    pelvis = armature_obj.data.edit_bones.new('Pelvis')
+    pelvis.head = (0, 0, 0)
+    pelvis.tail = (0, 0, 0.5)
 
-    spine = armature_obj.data.edit_bones.new('spine')
-    spine.head = (0, 0, 0.5)
-    spine.tail = (0, 0, 1.0)
-    spine.parent = root
+    tail_01 = armature_obj.data.edit_bones.new('Tail_01')
+    tail_01.head = (0.1, 0, 0)
+    tail_01.tail = (0.1, 0, -0.5)
+    tail_01.parent = pelvis
 
-    chest = armature_obj.data.edit_bones.new('chest')
-    chest.head = (0, 0, 1.0)
-    chest.tail = (0, 0, 1.5)
-    chest.parent = spine
+    tail_01_end = armature_obj.data.edit_bones.new('Tail_01_end')
+    tail_01_end.head = (0.1, 0, -0.5)
+    tail_01_end.tail = (0.1, 0, -1.0)
+    tail_01_end.parent = tail_01
 
-    head = armature_obj.data.edit_bones.new('head')
-    head.head = (0, 0, 1.5)
-    head.tail = (0, 0, 2.0)
-    head.parent = chest
+    tail_02 = armature_obj.data.edit_bones.new('Tail_02')
+    tail_02.head = (-0.1, 0, 0)
+    tail_02.tail = (-0.1, 0, -0.5)
+    tail_02.parent = pelvis
 
-    # Add finger bones to merge (children of head)
-    finger1 = armature_obj.data.edit_bones.new('finger1')
-    finger1.head = (0, 0, 2.0)
-    finger1.tail = (0, 0.1, 2.1)
-    finger1.parent = head
-
-    finger2 = armature_obj.data.edit_bones.new('finger2')
-    finger2.head = (0, 0.1, 2.1)
-    finger2.tail = (0, 0.2, 2.2)
-    finger2.parent = finger1
+    tail_02_end = armature_obj.data.edit_bones.new('Tail_02_end')
+    tail_02_end.head = (-0.1, 0, -0.5)
+    tail_02_end.tail = (-0.1, 0, -1.0)
+    tail_02_end.parent = tail_02
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -93,7 +92,7 @@ try:
     mesh_obj.parent = armature_obj
 
     # Add vertex groups matching the bones
-    for bone_name in ['root', 'spine', 'chest', 'head', 'finger1', 'finger2']:
+    for bone_name in ['Pelvis', 'Tail_01', 'Tail_01_end', 'Tail_02', 'Tail_02_end']:
         vg = mesh_obj.vertex_groups.new(name=bone_name)
         # Assign all 8 cube vertices to this group with weight 1.0
         vg.add([i for i in range(len(mesh_obj.data.vertices))], 1.0, 'ADD')
@@ -106,7 +105,7 @@ try:
     bone_names = [bone.name for bone in armature_obj.data.bones]
     print('Bones before merge: {}'.format(bone_names))
 
-    expected_bones = ['root', 'spine', 'chest', 'head', 'finger1', 'finger2']
+    expected_bones = ['Pelvis', 'Tail_01', 'Tail_01_end', 'Tail_02', 'Tail_02_end']
     for bone_name in expected_bones:
         if bone_name not in bone_names:
             errors.append('Missing bone: ' + bone_name)
@@ -122,6 +121,9 @@ try:
 
     root_bones = Rootbone.get_parent_root_bones(None, None)
     print('Root bones enum items: {}'.format(root_bones))
+
+    if not root_bones:
+        errors.append('No root bone groups detected - expected Tail_01/Tail_02 to be grouped')
 
     # Verify the bone merge operator exists
     op_cls = getattr(bpy.types, 'CATS_BONEMERGE_OT_merge_bones', None)

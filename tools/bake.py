@@ -61,8 +61,8 @@ def autodetect_passes(self, context, tricount, is_desktop):
                                           or len(set([node.inputs["Roughness"].default_value for node in bsdf_nodes])) > 1)
 
     # Emit: similar to diffuse
-    context.scene.bake_pass_emit = (any([node.inputs["Emission"].is_linked for node in bsdf_nodes])
-                                    or len(set([node.inputs["Emission"].default_value[:] for node in bsdf_nodes])) > 1)
+    context.scene.bake_pass_emit = (any([node.inputs["Emission Color"].is_linked for node in bsdf_nodes])
+                                    or len(set([node.inputs["Emission Color"].default_value[:] for node in bsdf_nodes])) > 1)
 
     # Transparency: similar to diffuse
     context.scene.bake_pass_alpha = is_desktop and (any([node.inputs["Alpha"].is_linked for node in bsdf_nodes])
@@ -168,6 +168,8 @@ class BakeButton(bpy.types.Operator):
                     tree = slot.material.node_tree
                     for node in tree.nodes:
                         if node.type == "BSDF_PRINCIPLED":
+                            if input1 not in node.inputs or input2 not in node.inputs:
+                                continue
                             dv1 = node.inputs[input1].default_value
                             dv2 = node.inputs[input2].default_value
                             node.inputs[input2].default_value = dv1
@@ -202,10 +204,12 @@ class BakeButton(bpy.types.Operator):
                     tree = slot.material.node_tree
                     for node in tree.nodes:
                         if node.type == "BSDF_PRINCIPLED":
+                            if input_name not in node.inputs:
+                                continue
                             node.inputs[input_name].default_value = input_value
 
     # "Bake pass" function. Run a single bake to "<bake_name>.png" against all selected objects.
-    def bake_pass(self, context, bake_name, bake_type, bake_pass_filter, objects, bake_size, bake_samples, bake_ray_distance, background_color, clear, bake_margin, bake_active=None, bake_multires=False,
+    def bake_pass(self, context, bake_name, bake_type, bake_pass_filter, objects, bake_size, bake_samples, bake_ray_distance, background_color, clear, bake_margin, bake_active=None,
                   normal_space='TANGENT'):
         bpy.ops.object.select_all(action='DESELECT')
         if bake_active is not None:
@@ -282,7 +286,6 @@ class BakeButton(bpy.types.Operator):
         context.scene.render.bake.use_clear = clear and bake_type == 'NORMAL'
         context.scene.render.bake.use_selected_to_active = (bake_active != None)
         context.scene.render.bake.margin = bake_margin
-        context.scene.render.use_bake_multires = bake_multires
         context.scene.render.bake.normal_space = normal_space
         bpy.ops.object.bake(type=bake_type,
                             # pass_filter=bake_pass_filter,
@@ -611,11 +614,11 @@ class BakeButton(bpy.types.Operator):
         # Bake roughness, invert
         if pass_smoothness:
             # Specularity of 0 messes up 'roughness' bakes. Fix that here.
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
-            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", 0.5)
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
+            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", 0.5)
             self.bake_pass(context, "smoothness", "ROUGHNESS", set(), [obj for obj in collection.all_objects if obj.type == "MESH"],
                            (resolution, resolution), 32, 0, [1.0, 1.0, 1.0, 1.0], True, int(margin * resolution / 2))
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
             image = bpy.data.images["SCRIPT_smoothness.png"]
             pixel_buffer = list(image.pixels)
             for idx in range(0, len(image.pixels)):
@@ -681,8 +684,8 @@ class BakeButton(bpy.types.Operator):
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic")
             self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", 0)
             # Specularity of 0 messes up 'roughness' bakes. Fix that here.
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
-            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", 0.5)
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
+            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", 0.5)
 
 
             # Run the bake pass (bake roughness)
@@ -693,7 +696,7 @@ class BakeButton(bpy.types.Operator):
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Anisotropic Rotation")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Roughness")
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
 
 
         # advanced: bake metallic from last bsdf output
@@ -701,8 +704,8 @@ class BakeButton(bpy.types.Operator):
             # Find all Principled BSDF nodes. Flip Roughness and Metallic (default_value and connection)
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Roughness")
             # Specularity of 0 messes up 'roughness' bakes. Fix that here.
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
-            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", 0.5)
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
+            self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", 0.5)
 
             # Run the bake pass
             self.bake_pass(context, "metallic", "ROUGHNESS", set(), [obj for obj in collection.all_objects if obj.type == "MESH"],
@@ -710,7 +713,7 @@ class BakeButton(bpy.types.Operator):
 
             # Revert the changes (re-flip)
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Roughness")
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular", "Transmission Roughness")
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
 
         # Pack to diffuse alpha (if selected)
         if pass_diffuse and ((diffuse_alpha_pack == "SMOOTHNESS" and pass_smoothness) or
@@ -1047,7 +1050,7 @@ class BakeButton(bpy.types.Operator):
             emittexnode.image = bpy.data.images["SCRIPT_emission.png"]
             emittexnode.location.x -= 800
             emittexnode.location.y -= 150
-            tree.links.new(bsdfnode.inputs["Emission"], emittexnode.outputs["Color"])
+            tree.links.new(bsdfnode.inputs["Emission Color"], emittexnode.outputs["Color"])
 
         # Rebake diffuse to vertex colors: Incorperates AO
         if pass_diffuse and diffuse_vertex_colors:

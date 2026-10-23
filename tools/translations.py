@@ -5,7 +5,6 @@ import csv
 import bpy
 import json
 import pathlib
-import addon_utils
 from bpy.app.translations import locale
 
 from .register import register_wrap
@@ -80,15 +79,27 @@ def get_languages_list(self, context):
 
 def update_ui(self, context):
     from . import settings
-    if settings.update_settings(None, None):
+    lang_changed = (settings.settings_data or {}).get('ui_lang') != context.scene.ui_lang
+    settings.update_settings(self, context)
+    if lang_changed:
         reload_scripts()
 
 
 def get_language_from_settings():
-    # Load settings file
-    from . import settings as Settings
+    # Compute the settings path here instead of importing tools/settings.py.
+    # That module imports tools/translate.py, which imports this module, so
+    # importing it while load_translations() runs during module init would be
+    # a circular import and leave the dictionary empty while translate.py's
+    # class attributes are being evaluated.
     try:
-        with open(Settings.settings_file, encoding="utf8") as file:
+        settings_file = bpy.utils.extension_path_user(
+            __package__.rpartition('.')[0] or __package__, path="settings.json")
+    except (AttributeError, ValueError, TypeError):
+        settings_file = os.path.join(resources_dir, "settings.json")
+
+    # Load settings file
+    try:
+        with open(settings_file, encoding="utf8") as file:
             settings_data = json.load(file)
     except FileNotFoundError:
         print("SETTINGS FILE NOT FOUND!")

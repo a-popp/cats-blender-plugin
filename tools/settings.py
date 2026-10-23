@@ -27,11 +27,8 @@ import os
 import bpy
 import json
 import copy
-import time
 import pathlib
 import collections
-from threading import Thread
-from datetime import datetime, timezone
 from collections import OrderedDict
 
 from .. import globs
@@ -44,8 +41,11 @@ resources_dir = os.path.join(str(main_dir), "resources")
 
 # Use extension user path for writable settings if available (Blender 4.2+).
 # Fall back to resources dir for legacy installs / tests.
+# __package__ is the tools subpackage ('<ext>.tools'), so strip the last
+# component to get the extension package name itself.
 try:
-    _ext_user_path = bpy.utils.extension_path_user(__package__, path="settings.json")
+    _ext_user_path = bpy.utils.extension_path_user(
+        __package__.rpartition('.')[0] or __package__, path="settings.json")
     if _ext_user_path:
         settings_file = _ext_user_path
     else:
@@ -167,36 +167,33 @@ def reset_settings(full_reset=False, to_reset_settings=None):
 def start_apply_settings_timer():
     global lock_settings
     lock_settings = True
-    thread = Thread(target=apply_settings, args=[])
-    thread.start()
+    bpy.app.timers.register(apply_settings, first_interval=0.1)
 
 
 def apply_settings():
-    applied = False
-    while not applied:
-        if hasattr(bpy.context, 'scene'):
-            try:
-                settings_to_reset = []
-                for setting in settings_default.keys():
-                    try:
-                        setattr(bpy.context.scene, setting, settings_data.get(setting))
-                    except TypeError:
-                        settings_to_reset.append(setting)
-                if settings_to_reset:
-                    reset_settings(to_reset_settings=settings_to_reset)
-                    print("RESET SETTING ON TIMER:", setting)
-            except AttributeError:
-                time.sleep(0.3)
-                continue
+    # Runs on the main thread via bpy.app.timers: accessing bpy data from a
+    # background thread is not safe. Returns a retry interval in seconds, or
+    # None once the settings have been applied.
+    if not hasattr(bpy.context, 'scene'):
+        return 0.3
 
-            applied = True
-            # print('Refreshed Settings!')
-        else:
-            time.sleep(0.3)
+    try:
+        settings_to_reset = []
+        for setting in settings_default.keys():
+            try:
+                setattr(bpy.context.scene, setting, settings_data.get(setting))
+            except TypeError:
+                settings_to_reset.append(setting)
+        if settings_to_reset:
+            reset_settings(to_reset_settings=settings_to_reset)
+            print("RESET SETTING ON TIMER:", settings_to_reset)
+    except AttributeError:
+        return 0.3
 
     # Unlock settings
     global lock_settings
     lock_settings = False
+    return None
 
 
 def settings_changed():
@@ -222,6 +219,8 @@ def update_settings(self, context):
 
     if settings_changed_tmp:
         save_settings()
+
+    # Property update callbacks must return None.
 
 
 def get_embed_textures():

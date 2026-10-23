@@ -1,40 +1,4 @@
 name,en_US,ja_JP,ko_KR
-Main.error.restartAdmin,"
-
-Faulty CATS installation found!
-To fix this restart Blender as admin!     
-",,"
-
-잘못 설치된 Cats Plugin이 발견되었습니다!
-이 문제를 해결하려면 Blender를 관리자로 다시 시작하세요!     
-"
-Main.error.deleteFollowing,"                                                                                                                                                                                                         
-
-Faulty CATS installation found!
-To fix this delete the following files and folders inside your addons folder:
-",,"                                                                                                                                                                                                         
-
-잘못 설치된 Cats Plugin이 발견되었습니다!
-이 문제를 해결하려면 addons 폴더에서 다음 파일과 폴더를 삭제하세요.:
-"
-Main.error.installViaPreferences,"
-
-Faulty CATS installation found!
-Please install CATS via User Preferences and restart Blender!
-",,"
-
-잘못 설치된 Cats Plugin이 발견되었습니다!
-사용자 환경 설정(User Preferences)을 통해 CATS를 설치하고 블렌더를 다시 시작하세요!
-"
-Main.error.restartAndEnable,"
-
-Faulty CATS installation was found and fixed!
-Please restart Blender and enable CATS again!
-",,"
-
-잘못된 설치된 Cats Plugin 발견됐고 수정되었습니다!
-Blender를 다시 시작하고 Cats Plugin를 다시 활성화하세요!
-"
 Main.error.unsupportedVersion,"
 
 Blender versions older than 5.2 are not supported by Zeni's Stripped Cats.
@@ -43,15 +7,6 @@ Please use Blender 5.2 or later.
 
 Blender 5.2 이전 버전은 Zeni's Stripped Cats에서 지원하지 않습니다.
 Blender 5.2 버전 이상을 사용하세요.
-"
-Main.error.beta2.80,"
-
-You are still on the beta version of Blender 2.80!
-Please update to the release version of Blender 2.80.
-",,"
-
-아직 Blender 2.80 베타 버전을 사용 중입니다!
-Blender를 2.80 정식 버전으로 업데이트하세요.
 "
 Main.error.restartAndEnable_alt,"
 
@@ -63,19 +18,10 @@ Blender를 다시 시작하고 Cats Plugin를 다시 활성화하세요!
 ToolPanel.label,Cats Blender Plugin,Cats ブレンダープラグイン,
 ToolPanel.category,CATS,,
 ArmaturePanel.label,Model,モデル,모델
-ArmaturePanel.warn.oldBlender1,Old Blender version detected!,古いブレンダーバージョンが検出されました!,이전 블렌더 버전이 발견되었습니다!
-ArmaturePanel.warn.oldBlender2,Some features might not work!,一部の機能は動作しない可能性があります!,일부 기능이 작동하지 않을 수 있습니다!
-ArmaturePanel.warn.oldBlender3,Please update to Blender 2.79!,ブレンダー2.79以上にアップデートしてください!,블렌더 2.79 버전으로 업데이트하세요!
 ArmaturePanel.warn.noDict1,Dictionary not found!,辞書が見つかりません!,사전파일(Dictionary)을 찾을 수 없습니다!
 ArmaturePanel.warn.noDict2,"Translations will work, but are not optimized.",翻訳は機能しますが、最適化されません。,번역은 되지만 최적화되지는 않습니다.
 ArmaturePanel.warn.noDict3,Reinstall Cats to fix this.,これを修正するためにCatsを再インストールします。,이 문제를 해결하려면 Cats를 다시 설치하세요.
-ArmaturePanel.ImportAnyModel.label,Import Model,モデルのインポート,모델 불러오기
-ModelSettings.label,Fix Model Settings,モデル設定の修正,모델 고치기 설정
-ModelSettings.warn.fbtFix1,The Full Body Tracking Fix,フル ボディトラッキングの修正,풀바디 트래킹 수정
-ModelSettings.warn.fbtFix2,is no longer needed for VRChat.,もはやVrChatのために必要とされていません。,VRChat에 더 이상 필요하지 않음.
-ModelSettings.warn.fbtFix3,It's still available in Model Options.,モデル オプションで引き続き使用できます。.,이것은 모델옵션에서 여전히 이용가능.
 ManualPanel.label,Model Options,モデル オプション,모델 옵션
-ManualPanel.separateBy,Separate by:,別に:,메쉬 분리:
 ManualPanel.SeparateByMaterials.label,Materials,材料,매테리얼별로
 ManualPanel.SeparateByLooseParts.label,Loose Parts,緩い部品,느슨한 부분별로
 ManualPanel.SeparateByShapekeys.label,Shapes,図形,쉐이프별로
@@ -139,21 +85,8 @@ A hard limit will be established in the future that will not be much more than t
 DecimationPanel.warn.notIfBaking,Not reccomended if baking!,,베이킹 할 시 권장되지 않습니다!
 VisemePanel.label,Visemes,バイセム,립싱크(Visemes)
 VisemePanel.error.noMesh,No meshes found!,メッシュが見つかりません!,메쉬가 발견되지 않음!
-BoneRootPanel.label,Bone Parenting,ボーンの子育て,본 부모설정
 OptimizePanel.label,Optimization,最適化,최적화
-OptimizePanel.matCombDisabled1,Material Combiner is not enabled!,マテリアル コンバイナーが有効になっていません!,매테리얼 통합기가 활성화되지 않았습니다!
-OptimizePanel.matCombDisabled2,Enable it in your user preferences:,ユーザー設定で有効にする:,User preferences에서 이것을 활성화하세요:
-OptimizePanel.matCombOutdated1,Your Material Combiner is outdated!,マテリアル コンバイナーが古い!,당신의 매테리얼 통합기의 버전이 낮습니다!
-OptimizePanel.matCombOutdated2,Please update to the latest version.,最新バージョンにアップデートしてください.,최신버전으로 업데이트하세요.
-OptimizePanel.matCombOutdated3,Update via the 'Updates' panel,'更新' パネルを使用して更新します。,'Updates' 패널에서 업데이트하세요.
-OptimizePanel.matCombOutdated4,in the 'MatCombiner' tab to the {location},'MatCombiner' タブの {location},'MatCombiner' 탭의 {location}
-OptimizePanel.matCombOutdated5_2.79,left.,左側にあります。。,왼쪽에 있습니다.
-OptimizePanel.matCombOutdated5_2.8,right.,右側にあります。。,오른쪽에 있습니다.
-OptimizePanel.matCombOutdated6,Or download and install it manually:,または手動でダウンロードしてインストールする:,혹은 직접 다운로드와 설치하기:
-OptimizePanel.matCombOutdated6_alt,Download and install it manually:,手動でダウンロードしてインストールする:,직접 다운로드와 설치하기:
-OptimizePanel.matCombNotInstalled,Material Combiner is not installed!,マテリアル コンバイナーがインストールされていません!,매테리얼 통합기가 설치되지 않았습니다!
 BakePanel.label,Bake,焼く,베이크(Bake)
-BakePanel.versionTooOld,Only for Blender 2.80+,,Blender 2.80 버전 이상에서만 호환
 BakePanel.autodetectlabel,Autodetect:,,자동감지:
 BakePanel.generaloptionslabel,General options:,,일반 옵션:
 BakePanel.noheadfound,"No ""Head"" bone found!",,"""Head"" 본 발견되지 않음!"
@@ -163,45 +96,6 @@ BakePanel.alphalabel,Alpha:,,
 BakePanel.transparencywarning,Transparency isn't currently selected!,,현재 투명도가 선택되지 않았습니다!
 BakePanel.smoothnesswarning,Smoothness isn't currently selected!,,현재 부드러움이 선택되지 않았습니다!
 BakePanel.doublepackwarning,Smoothness packed in two places!,,두군데에 부드러움이 설정되었습니다!
-UpdaterPanel.label,Settings & Updates,設定と更新,세팅 & 업데이트
-UpdaterPanel.name,Settings:,設定:,세팅:
-UpdaterPanel.requireRestart1,Restart required.,再起動が必要.,재시작이 필요합니다.
-UpdaterPanel.requireRestart2,Some changes require a Blender restart.,一部の変更では、ブレンダーの再起動が必要です.,일부 변경은 블렌더를 다시 시작해야합니다.
-FixArmature.label,Break Model,モデル修正,모델 고치기
-FixArmature.desc,"PROBABLY DON'T TRUST THIS IN 2024+
-SHOULD automatically:
-- Reparents bones
-- Removes unnecessary bones, objects, groups & constraints
-- Translates and renames bones & objects
-- Merges weight paints
-- Corrects the hips
-- Joins meshes
-- Converts morphs into shapes
-- Corrects shading",,"자동으로 아래의 항목들이 고쳐집니다:
-- 본들의 부모 재설정
-- 필요하지 않는 본들, 오브젝트들, 그룹들과 컨스트레인트들을 제거
-- 본들과 오브젝트들을 영어로 번역하고 이름들을 바꿈
-- 웨이트 페인트들을 통합
-- 'hips'본을 고침
-- 메쉬 통합
-- morphs를 shapes로 변환
-- 쉐이딩을 고침"
-FixArmature.error.noMesh,"No mesh inside the armature found!
-If there are meshes outside of the armature,
-set the armature as the parent of the meshes.",,"뼈대(Armature) 안에 메쉬가 없습니다!
-만약 뼈대 밖에 메쉬들이 있다면,
-그 뼈대를 메쉬들의 부모로 설정하세요."
-FixArmature.error.faultyUV1,"The model was successfully fixed, but there were {uvcoord} faulty UV coordinates.",,"모델이 성공적으로 고쳐졌지만, 잘못된 UV 좌표들이 있습니다. {uvcoord}"
-FixArmature.error.faultyUV2,This could result in broken textures and you might have to fix them manually.,,이것은 텍스처를 망가뜨리는 결과를 불러올 수 있으며 당신이 그것들을 직접 손봐야할 수 있습니다.
-FixArmature.error.faultyUV3,This issue is often caused by edits in PMX editor.,,이 이슈는 자주 PMX editor에서 편집할 경우 일어날 수 있습니다.
-FixArmature.fixedSuccess,Model successfully fixed.,,모델이 성공적으로 고쳐졌습니다.
-FixArmature.bonesNotFound,The following bones were not found:,,해당 본들이 발견되지 않았습니다:
-FixArmature.cantFix1,Looks like you found a model which Cats could not fix!,,Cats Plugin이 고칠 수 없는 모델인 것 같습니다!
-FixArmature.cantFix2,If this is a non modified model we would love to make it compatible.,,이것이 수정되지 않은 모델이라면 우리는 호환되도록 만들고 싶습니다.
-FixArmature.cantFix3,"Report it to us in the forum or in our discord, links can be found in the Credits panel.",,포럼이나 디스코드에서 우리에게 신고해주세요. 링크는 크레딧 패널에 있습니다.
-FixArmature.notParent," is not parented at all, this will cause problems!",," 부모설정이 전혀 안됐다면, 이로 인해 문제가 발생할 수 있습니다!"
-FixArmature.notParentTo1, is not parented to ,, 가 
-FixArmature.notParentTo2,", this will cause problems!",,"의 부모로 설정돼지 않았다면, 이로 인해 문제가 발생할 수 있습니다!"
 StartPoseMode.label,Start Pose Mode,ポーズモードを開始,포즈모드 시작
 StartPoseMode.desc,"Starts the pose mode.
 This lets you test how your model will move",,"포즈모드를 시작합니다.
@@ -393,36 +287,11 @@ The transforms of the merge armature got reset and the mesh you have to modify g
 Now place this selected mesh where and how you want it to be and then merge the armatures again.
 If you don't want that, undo this operation.",,
 merge_armatures.error.pleaseUndo,"Something went wrong! Please undo, check your selections and try again.",,
-EnableSMC.label,Enable Material Combiner,マテリアルコンバイナを有効にする,매테리얼 통합기 활성화
-EnableSMC.desc,Enables Material Combiner,,
-EnableSMC.success,Enabled Material Combiner!,,
-InstallShotariya.label,Error while loading Material Combiner:,マテリアルコンバイナ読み込み中にエラーが発生しました:,매테리얼 통합기를 로드하는 중 오류 발생:
-InstallShotariya.error.install1,Material Combiner is not installed!,,
-InstallShotariya.error.install2,The plugin 'Material Combiner' by Shotariya is required for this function.,,
-InstallShotariya.error.install3,Please download and install it manually:,,
-InstallShotariya.error.enable1,Material Combiner is not enabled!,,
-InstallShotariya.error.enable2,The plugin 'Material Combiner' by Shotariya is required for this function.,,
-InstallShotariya.error.enable3,Please enable it in your User Preferences.,,
-InstallShotariya.error.version1,Material Combiner is outdated!,,
-InstallShotariya.error.version2,The latest version is required for this function.,,
-InstallShotariya.error.version3,Please download and install it manually:,,
-ShotariyaButton.label,Download Material Combiner,マテリアルコンバイナーをダウンロード,매테리얼 통합기 다운로드
-ShotariyaButton.URL,https://vrcat.club/threads/material-combiner-blender-addon-1-1-3.2255/,,
-ShotariyaButton.success,Material Combiner link opened,,
 BoneMergeButton.label,Merge Bones,ボーンをマージする,뼈 통합
 BoneMergeButton.desc,"Merges the given percentage of bones together.
 This is useful to reduce the amount of bones used by Dynamic Bones.",,
 BoneMergeButton.success,Merged bones.,,
 ShowError.label,Report: Error,レポート: エラー,
-ForumButton.label,Go to the Forums,フォーラムに移動する,포럼으로 가기
-ForumButton.URL,https://vrcat.club/threads/cats-blender-plugin.6/,,
-ForumButton.success,Forum opened.,,
-DiscordButton.label,Join our Discord,Discordサーバーに参加する,디스코드에 가입하기
-DiscordButton.URL,https://discord.gg/f8yZGnv,,
-DiscordButton.success,Discord opened.,,
-PatchnotesButton.label,Latest Patchnotes,最新のパッチノート,최신 패치노트
-PatchnotesButton.URL,https://github.com/michaeldegroot/cats-blender-plugin/releases,,
-PatchnotesButton.success,Patchnotes opened.,,
 ScanButton.label,Scan for decimation models,デシメーション モデルのスキャン,버텍스 줄일 모델 검색
 ScanButton.desc,Separates the mesh.,,
 AddShapeButton.label,Add,追加,
@@ -450,91 +319,6 @@ decimate.disableFingers,or disable 'Save Fingers'.,,
 decimate.noDecimationNeeded,The model already has less than {number} tris. Nothing had to be decimated.,,
 decimate.cantDecimate1,The model could not be decimated to {number} tris.,,
 decimate.cantDecimate2,It got decimated as much as possible within the limits.,,
-StartTestingButton.label,Start Eye Testing,スタートアイテスト,눈 움직임 테스트 시작
-StartTestingButton.desc,"This will let you test how the eye movement will look ingame.
-Don't forget to stop the Testing process afterwards.
-Bones ""LeftEye"" and ""RightEye"" are required.",,
-StopTestingButton.label,Stop Eye Testing,ストップアイテスト,눈 움직임 테스트 중지
-StopTestingButton.desc,Stops the testing process.,,
-StopTestingButton.error.tryAgain,Something went wrong. Please try eye testing again.,,
-ResetRotationButton.label,Reset Rotation,回転をリセットする,회전 초기화
-ResetRotationButton.desc,This resets the eye positions.,,
-AdjustEyesButton.label,Set Range,目の範囲を設定,범위 설정
-AdjustEyesButton.desc,"Lets you re-adjust the movement range of the eyes.
-This gets saved",,
-AdjustEyesButton.error.noVertex,"The bone ""{bone}"" has no existing vertex group or no vertices assigned to it.
-This might be because you selected the wrong mesh or the wrong bone.
-Also make sure to join your meshes before creating eye tracking and make sure that the eye bones actually move the eyes in pose mode.",,
-StartIrisHeightButton.label,Start Iris Height Adjustment,アイリスの高さの調整を開始,눈동자 높이 조정 시작
-StartIrisHeightButton.desc,"Lets you readjust the distance of the iris from the eye ball.
-Use this to fix clipping of the iris into the eye ball.
-This gets saved.",,
-TestBlinking.label,Test,テスト,테스트
-TestBlinking.desc,This lets you see how eye blinking will look in-game.,,게임 중에 눈 깜박임이 어떻게 보이는 지 확인할 수 있습니다.
-TestLowerlid.label,Test,テスト,테스트
-TestLowerlid.desc,This lets you see how lowerlids will look in-game.,,게임 중에 아래 눈꺼풀이 어떻게 보이는 지 확인할 수 있습니다.
-ResetBlinkTest.label,Reset Shapes,図形をリセットする,쉐이프 초기화
-ResetBlinkTest.desc,This resets the blink testing.,,눈깜빡임 테스트를 초기화한다.
-ImportAnyModel.label,Import Any Model,任意のモデルをインポート,아무 모델 불러오기
-ImportAnyModel.desc2.79,"Import a model of any supported type.
-
-Supported types:
-- MMD: .pmx/.pmd
-- XNALara: .xps/.mesh/.ascii
-- Source: .smd/.qc
-- VRM: .vrm
-- FBX .fbx 
-- DAE: .dae 
-- ZIP: .zip",,
-ImportAnyModel.desc2.8,"Import a model of any supported type.
-
-Supported types:
-- MMD: .pmx/.pmd
-- XNALara: .xps/.mesh/.ascii
-- Source: .smd/.qc/.vta/.dmx
-- VRM: .vrm
-- FBX: .fbx
-- DAE: .dae 
-- ZIP: .zip",,
-ImportAnyModel.importantInfo.label,IMPORTANT INFO (hover here),重要な情報(ここにホバー),
-ImportAnyModel.importantInfo.desc,"If you want to modify the import settings, use the button next to the Import button.
-
-",,
-ImportAnyModel.error.emptyZip,The selected zip file contains no importable models.,,
-ImportAnyModel.error.unsupportedFBX,"The FBX file version is unsupported!
-Please use a tool such as the ""Autodesk FBX Converter"" to make it compatible.",,
-ZipPopup.label,Zip Model Selection:,圧縮モデルの選択:,Zip 모델 선택:
-ZipPopup.desc,Shows the models contained in the zip files,,zip 파일에 포함된 모델들을 보여준다
-ZipPopup.selectModel1,Select which model you want to import,,
-ZipPopup.selectModel2,Then confirm with OK,,
-get_zip_content.choose,"Import model ""{model}"" from the zip ""{zipName}?""",,
-ModelsPopup.label,Select which you want to import:,インポートする項目を選択します:,불러올 형식을 선택:
-ModelsPopup.desc,Show individual import options,,
-ImportXPS.label,XNALara,,
-ImportXPS.desc,Import a XNALara model (.xps/.mesh/.ascii),,
-ImportSource.label,Source,,
-ImportSource.desc,Import a Source model (.smd/.qc/.vta/.dmx),,
-ImportFBX.label,FBX,,
-ImportFBX.desc,Import a FBX model (.fbx),,
-ImportVRM.label,VRM,,
-ImportVRM.desc,Import a VRM model (.vrm),,
-InstallXPS.label,XPS Tools is not installed or enabled!,XPS ツールがインストールされていないか、有効になっていない!,
-InstallSource.label,Source Tools is not installed or enabled!,ソース ツールがインストールされていないか、有効になっていません!,
-InstallVRM.label,VRM Importer is not installed or enabled!,VRMインポーターがインストールされていないか、有効になっていません!,
-InstallX.pleaseInstall1,If it is not enabled please enable it in your User Preferences.,,
-InstallX.pleaseInstall2,If it is not installed please download and install it manually.,,
-InstallX.pleaseInstall3,Make sure to install the version for Blender {blenderVersion},,
-InstallX.pleaseInstallTesting,Currently you have to select 'Testing' in the addons settings.,,
-XpsToolsButton.label,Download XPS Tools,XPSツールをダウンロード,XPS Tools 다운로드
-XpsToolsButton.URL,https://github.com/johnzero7/XNALaraMesh,,
-XpsToolsButton.success,XPS Tools link opened,,
-SourceToolsButton.label,Download Source Tools,ソースツールをダウンロード,Source Tools 다운로드
-SourceToolsButton.URL,https://github.com/Artfunkel/BlenderSourceTools,,
-SourceToolsButton.success,Source Tools link opened,,
-VrmToolsButton.label,Download VRM Importer,VRMインポーターをダウンロード,VRM Importer 다운로드
-VrmToolsButton.URL_2.79,https://github.com/iCyP/VRM_IMPORTER_for_Blender2_79,,
-VrmToolsButton.URL_2.8,https://github.com/saturday06/VRM_IMPORTER_for_Blender2_8,,
-VrmToolsButton.success,VRM Importer link opened,,
 ExportModel.label,Export Model,モデルのエクスポート,모델 내보내기
 ExportModel.desc,"Export this model as .fbx for Unity.
 
@@ -563,18 +347,6 @@ ErrorDisplay.textures2,This model has no textures assigned but you have 'Embed T
 ErrorDisplay.textures3,"Therefore, no textures will be embedded into the FBX.",,
 ErrorDisplay.textures4,"This is not an issue, but you will have to import the textures manually into Unity.",,
 ErrorDisplay.continue,Continue to Export,,
-OneTexPerMatButton.label,One Material Texture,1つのマテリアルテクスチャ,매테리얼당 하나의 텍스처
-OneTexPerMatButton.desc,Have all material slots ignore extra texture slots as these are not used by VRChat.,,
-OneTexPerMatOnlyButton.label,One Material Texture,1つのマテリアルテクスチャ,매테리얼당 하나의 텍스처
-OneTexPerMatOnlyButton.desc,"Have all material slots ignore extra texture slots as these are not used by VRChat.
-Also removes the textures from the material instead of disabling it.
-This makes no difference, but cleans the list for the perfectionists",,
-ToolsMaterial.error.notCompatible,This function is not yet compatible with Blender 2.8!,,
-OneTexPerXButton.success,All materials have one texture now.,,
-StandardizeTextures.label,Standardize Textures,テクスチャを標準化する,텍스처들 표준화
-StandardizeTextures.desc,"Enables Color and Alpha on every texture, sets the blend method to Multiply
-and changes the materials transparency to Z-Transparency",,
-StandardizeTextures.success,All textures are now standardized.,,
 CombineMaterialsButton.label,Combine Same Materials,同じマテリアルを組み合わせる,같은 매테리얼들을 통합
 CombineMaterialsButton.desc,"Combines similar materials into one, reducing draw calls.
 Your avatar should visibly look the same after this operation.
@@ -599,21 +371,11 @@ RefreshRootButton.success,"Root bones refreshed, check the root bones list again
 RevertChangesButton.label,Revert Settings,設定を元に戻す,설정 되돌리기
 RevertChangesButton.desc,Revert the changes back to how they were on Blender start-up.,,변경 사항을 Blender 시작했을 때의 설정으로 되돌립니다.
 RevertChangesButton.success,Settings reverted.,,설정 복구됨.
-ResetGoogleDictButton.label,Clear Local Google Translations,ローカルのGoogle翻訳をクリア,로컬 Google 번역 지우기
-ResetGoogleDictButton.desc,Deletes all currently saved Google Translations. You can't undo this,,현재 저장된 모든 Google 번역을 삭제합니다. 이 작업은 취소 할 수 없습니다.
-ResetGoogleDictButton.resetInfo,Local Google Dictionary cleared!,,로컬 Google 사전이 삭제되었습니다!
-DebugTranslations.label,Debug Google Translations,Google翻訳をデバッグ,Google 번역 디버그
-DebugTranslations.desc,"Tests Google translations and prints the response into a file called 'google-response.txt' located in the cats addon folder > resources
-This button is only visible in the cats development version",,
-DebugTranslations.error,"Errors found, response printed!!",,
-DebugTranslations.success,"No issues with Google Translations found, response printed!",,
+DebugTranslations.label,Debug Translations,Google翻訳をデバッグ,Google 번역 디버그
+DebugTranslations.desc,Reloads the internal translation dictionaries and prints missing keys.,,
+DebugTranslations.success,Translation dictionaries reloaded successfully.,,
 ShapeKeyApplier.label,Apply Selected Shapekey to Basis,選択したシェイプキーをBasisに適用,선택된 쉐이프키를 Basis에 적용
 ShapeKeyApplier.desc,Applies the selected shape key to the new Basis at it's current strength and creates a reverted shape key from the selected one,,
-ShapeKeyApplier.error.revertCustomBasis,"To revert the shape keys, please apply the ""Reverted"" shape keys in reverse order.
-Start with the shape key called ""{name}"".
-
-If you didn't change the shape key order, you can revert the shape keys from top to bottom.",,
-ShapeKeyApplier.error.revertCustomBasis.scale,7.3,,
 ShapeKeyApplier.error.revert,"To revert the shape keys, please apply the ""Reverted"" shape keys in reverse order.
 Start with the reverted shape key that uses the relative key called ""Basis"".
 
@@ -622,44 +384,21 @@ ShapeKeyApplier.error.revert.scale,7.3,,
 ShapeKeyApplier.successRemoved,"Successfully removed shapekey ""{name}"" from the Basis.",,
 ShapeKeyApplier.successSet,"Successfully set shapekey ""{name}"" as the new Basis.",,
 addToShapekeyMenu.ShapeKeyApplier.label,Apply Selected Shapekey to Basis,選択したシェイプキーをBasisに適用,선택된 쉐이프키를 Basis에 적용
-PatreonButton.label,Become a Patron,パトロンになる,후원하기
-PatreonButton.URL,https://www.patreon.com/catsblenderplugin,,
-PatreonButton.success,Patreon page opened.,,
 TranslateShapekeyButton.label,Translate Shape Keys,シェイプキーを翻訳する,쉐이프키 이름 번역
-TranslateShapekeyButton.desc,Translates all shape keys using the internal dictionary and Google Translate into English,Translates all shape keys using the internal dictionary and Google Translate,모든 쉐이프키들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
+TranslateShapekeyButton.desc,Translates all shape keys using the internal dictionary Translate into English,Translates all shape keys using the internal dictionary and Google Translate,모든 쉐이프키들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateShapekeyButton.success,Translated {number} shape keys.,,{number}개의 쉐이프키들이 번역되었습니다.
 TranslateBonesButton.label,Translate Bones,ボーンを翻訳する,본 이름 번역
-TranslateBonesButton.desc,Translates all bones using the internal dictionary and Google Translate into English,Translates all bones using the internal dictionary and Google Translate,모든 본들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
+TranslateBonesButton.desc,Translates all bones using the internal dictionary Translate into English,Translates all bones using the internal dictionary and Google Translate,모든 본들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateBonesButton.success,Translated {number} bones.,,{number}개의 본들이 번역되었습니다.
 TranslateObjectsButton.label,Translate Meshes & Objects,メッシュとオブジェクトを翻訳する,메쉬와 오브젝트들 번역
-TranslateObjectsButton.desc,Translates all meshes and objects using the internal dictionary and Google Translate into English,Translates all meshes and objects using the internal dictionary and Google Translate,모든 메쉬와 오브젝트들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
+TranslateObjectsButton.desc,Translates all meshes and objects using the internal dictionary Translate into English,Translates all meshes and objects using the internal dictionary and Google Translate,모든 메쉬와 오브젝트들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateObjectsButton.success,Translated {number} meshes and objects.,,{number}개의 메쉬들과 오브젝트들이 번역되었습니다.
 TranslateMaterialsButton.label,Translate Materials,マテリアルを翻訳する,매테리얼 번역
-TranslateMaterialsButton.desc,Translates all materials using the internal dictionary and Google Translate into English,Translates all materials using the internal dictionary and Google Translate,모든 매테리얼들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
+TranslateMaterialsButton.desc,Translates all materials using the internal dictionary Translate into English,Translates all materials using the internal dictionary and Google Translate,모든 매테리얼들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateMaterialsButton.success,Translated {number} materials.,,{number}개의 매테리얼들이 번역되었습니다.
-TranslateTexturesButton.label,Translate Textures,テクスチャを翻訳する,텍스처 번역
-TranslateTexturesButton.desc,Translates all textures using the internal dictionary and Google Translate into English,Translates all textures using the internal dictionary and Google Translate,모든 텍스처들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
-TranslateTexturesButton.success_alt,Translated all textures,,모든 텍스처들이 번역되었습니다.
-TranslateTexturesButton.error.noInternet,Could not connect to Google. Please check your internet connection.,,구글에 연결하지 못했습니다. 인터넷 연결을 확인해주세요.
-TranslateTexturesButton.success,Translated {number} textures,,{number}개의 텍스처들이 번역되었습니다
 TranslateAllButton.label,Translate Everything,すべてを翻訳する,모두 번역
-TranslateAllButton.desc,Translates everything using the internal dictionary and Google Translate into English,Translates everything using the internal dictionary and Google Translate,모든 것들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
+TranslateAllButton.desc,Translates everything using the internal dictionary Translate into English,Translates everything using the internal dictionary and Google Translate,모든 것들을 내장된 사전과 구글번역을 이용해 영어로 번역합니다.
 TranslateAllButton.success,Translated everything.,,번역이 완료되었습니다.
-TranslateX.error.wrongVersion,You need Blender 2.79 or higher for this function.,,이 기능을 사용하려면 Blender 2.79 이상의 버전이 필요합니다.
-update_dictionary.error.cantConnect,Could not connect to Google. Some parts could not be translated.,,구글에 연결하지 못했습니다. 일부분은 번역되지 못했습니다.
-update_dictionary.error.temporaryBan,It looks like you got banned from Google Translate temporarily!,,일시적으로 Google 번역에서 차단 된 것 같습니다!
-update_dictionary.error.catsTranslated,"
-Cats translated what it could with the local dictionary, but you will have to try again later for the Google translations.",,"
-Cats Plugin은 자체 내장된 로컬 사전으로 번역 할 수 있지만 나중에 Google 번역을 하려면 나중에 다시 시도해야합니다."
-update_dictionary.error.cantAccess,Cats was not able to access Google Translate!,,Cats는 Google 번역에 액세스 할 수 없습니다!
-update_dictionary.error.errorMsg,You got an error message from Google Translate!,,Google 번역에서 오류 메시지를 받았습니다!
-update_dictionary.error.apiChanged,"Could not get translations from Google Translate!
-This means that Google changed their API and translations will no longer work until this is fixed.
-Please translate manually or wait for an CATS update.
-For updates and dicussions please join our Discord. The link can be found in the Credits panel down below.",,"Google 번역에서 번역을 가져올 수 없습니다!
-이는 Google이 API를 변경했으며 문제가 해결 될 때까지 번역이 더 이상 작동하지 않음을 의미합니다.
-수동으로 번역하거나 Cats 업데이트를 기다리십시오.
-업데이트 및 토론을 원하시면 Discord에 가입해주세요. 링크는 아래의 크레딧 패널에서 찾을 수 있습니다."
 AutoVisemeButton.label,Create Visemes,バイセムを作成する,립싱크(Visemes) 생성
 AutoVisemeButton.desc,"This will give your avatar the ability to mimic each sound that comes from your mouth by blending between various shapes to mimic your actual voice.
 It will generate 15 shape keys from the 3 shape keys you specify",,"당신의 아바타가 다양한 쉐이프키들을 조합하여 실제 음성을 모방하여 말하는 것처럼 보이게 합니다.
@@ -669,30 +408,12 @@ AutoVisemeButton.error.selectShapekeys,"Please select the correct mouth shapekey
 AutoVisemeButton.success,Created mouth visemes!,,입모양 쉐이프키들을 생성했습니다!
 Scene.armature.label,Armature,アーマチュア,뼈대(Armature)
 Scene.armature.desc,Select the armature which will be used by Cats,,Cats에서 쓰여질 뼈대(Armature)를 선택해주세요.
-Scene.zip_content.label,Zip Content,コンテンツを圧縮する,Zip 내용물
-Scene.zip_content.desc,Select the model you want to import,,불러올 모델을 선택해주세요
 Scene.keep_upper_chest.label,Keep Upper Chest,上部の胸の骨を保つ,Upper Chest 보존
 Scene.keep_upper_chest.desc,"VRChat now partially supports the Upper Chest bone, so deleting it is no longer necessary.
 
 Uncheck this if you are going to use the legacy SDK2 avatar system. Most people can leave this on.",,"VRChat은 이제 상단 가슴(Upper Chest) 본을 부분적으로 지원하므로 더 이상 삭제할 필요가 없습니다.
 
 경고: 현재 이것은 눈 추적(Eye Tracking)을 망치기 때문에, 눈 추적을 원한다면 이것을 체크하지 말아주세요."
-Scene.combine_mats.label,Combine Same Materials,同じマテリアルを組み合わせる,동일한 매테리얼 결합
-Scene.combine_mats.desc,"Combines similar materials into one, reducing draw calls.
-
-Your avatar should visibly look the same after this operation.
-This is a very important step for optimizing your avatar.
-If you have problems with this, uncheck this option and tell us!
-",,"유사한 매테리얼들을 하나로 결합하여 드로우 콜을 줄입니다.
-
-이 작업 후에도 아바타는 동일하게 보일 것입니다.
-이것은 아바타를 최적화하는 데 매우 중요한 단계입니다.
-이것에 문제가 있으면이 옵션을 선택 취소하고 우리에게 알려주세요!
-"
-Scene.remove_zero_weight.label,Remove Zero Weight Bones,ゼロウェイトボーンを削除する,제로 웨이트 본 제거
-Scene.remove_zero_weight.desc,"Cleans up the bones hierarchy, deleting all bones that don't directly affect any vertices.
-Uncheck this if bones or vertex groups that you want to keep got deleted",,"본 구조를 정리하고 어느 Vertex에도 영향을 주지 않는 모든 본들을 지웁니다.
-유지하려는 본들이나 버텍스 그룹이 지워질 경우 체크해제하세요"
 Scene.keep_end_bones.label,Keep End Bones,エンドボーンを保持,엔드 본(End Bones) 유지
 Scene.keep_end_bones.desc,"Saves end bones from deletion.
 
@@ -703,61 +424,10 @@ Make sure to always uncheck ""Add Leaf Bones"" when exporting or use the CATS ex
 다이나믹본을 사용하는 스커트의 움직임을 향상시키지만 본의 개수를 늘려버립니다.
 이것은 Unity에서 부서진 손가락 뼈들과 관련된 문제를 해결할 수도 있습니다.
 내보내기 할때는 언제나 ""Add Leaf Bones""을 체크해제하거나 Cats의 내보내기(Export) 버튼을 사용하세요"
-Scene.keep_twist_bones.label,Keep Twist Bones,ツイストボーンを保持,트위스트 본 유지
-Scene.keep_twist_bones.desc,"This will keep any bone with ""Twist"" in the name.
-So if there are certain bones that you want to keep, you can add ""Twist"" to them and they won't get deleted.
-
-VRChat can now make use of twist bones, so you can use this option to keep them",,"이름에 ""Twist""가 들어간 본들을 유지합니다.
-따라서 유지하려는 특정 뼈가있는 경우 이름에 ""Twist""를 추가 할 수 있으며 삭제되지 않습니다.
-
-VRChat은 이제 트위스트 본을 사용할 수 있으므로 이 옵션을 사용하여 유지할 수 있습니다."
-Scene.fix_twist_bones.label,Fix MMD Twist Bones,MMDツイスト ボーンを修正する,MMD 트위스트 본 고치기
-Scene.fix_twist_bones.desc,"This will make MMD arm twist bones usable in VRChat.
-WIll only work if the twist bones are properly named.
-Required names:
-  - ArmTwist[1-3]_[L/R]
-  - HandTwist[1-3]_[L/R]
-
-You don't need to enable ""Keep Twist Bones"" for this to work",,"VRChat에서 MMD 팔 트위스트 뼈대를 사용할 수 있습니다.
-트위스트 본의 이름이 올바르게 지정된 경우에만 작동합니다.
-필요한 이름형식:
-  - ArmTwist[1-3]_[L/R]
-  - HandTwist[1-3]_[L/R]
-
-이 작업을 위해 ""Keep Twist Bones""를 활성화 할 필요가 없습니다."
-Scene.join_meshes.label,Join Meshes,メッシュを結合する,메쉬 통합
-Scene.join_meshes.desc,"Joins all meshes of this model together.
-It also:
-  - Applies all transformations
-  - Repairs broken armature modifiers
-  - Applies all decimation and mirror modifiers
-  - Merges UV maps correctly
-
-INFO: You should always join your meshes",,"모델의 모든 메쉬들을 통합합니다.
-또한:
-  - 모든 쉐이프키들의 순서를 올바르게 재설정합니다.
-  - 모든 변환(Transforms)을 적용
-  - 망가진 아마추어 모디파이어들(armature modifiers)을 고침
-  - 모든 데시메이션(decimation)과 미러 모디파이어들(mirror modifiers)을 적용
-  - UV맵들을 올바르게 통합"
-Scene.connect_bones.label,Connect Bones,ボーンを接続する,본 연결
-Scene.connect_bones.desc,"This connects all bones to their child bone if they have exactly one child bone.
-This will not change how the bones function in any way, it just improves the aesthetic of the armature",,"모든 본들이 정확히 하나의 자식 본을 가지고 있다면 모든 본들을 그것들의 자식 본과 연결시켜줍니다.
-뼈의 기능에는 영향을 주지 않으며 뼈대(armature)의 미관을 개선할 뿐입니다."
-Scene.fix_materials.label,Fix Materials,マテリアルを修正する,매테리얼 고치기
-Scene.fix_materials.desc,This will apply some VRChat related fixes to materials,,매테리얼에 일부 VRChat 관련 픽스가 적용됩니다.
 Scene.remove_rigidbodies_joints.label,Remove Rigidbodies and Joints,リジッドボディとジョイントを除去,Rigidbodies와 Joints 제거
 Scene.remove_rigidbodies_joints.desc,"Rigidbodies and joints are used by MMD software to simulate physics.
 They are completely useless for VRChat, so removing them is recommended for VRChat users!",,"Rigidbodies와 joints는 MMD software에서 물리연산을 위해 사용되는 것들입니다.
 VRChat에 사용되지않으므로 VRChat 유저들에게는 이것들을 지우는 게 좋습니다!"
-Scene.use_google_only.label,Use Old Translations (not recommended),古い翻訳を使用する(推奨しません),구버전 번역을 사용 (권장되지 않음)
-Scene.use_google_only.desc,"Ignores the internal dictionary and only uses the Google Translator for shape key translations.
-
-This will result in slower translation speed and worse translations, but the translations will be like in CATS version 0.9.0 and older.
-Only use this if you have animations which rely on the old translations and you don't want to convert them to the new ones",,"내장된 사전 대신에 구글 번역기를 쉐이프키 번역에 사용합니다.
-
-번역 속도가 느려지고 번역의 질이 더 나빠질 수 있지만, 번역은 CATS 0.9.0 버전 혹은 그 이전의 버전처럼 될 것이다.
-이전 번역에 의존하는 애니메이션을 새 번역으로 변환하지 않을 경우에만 이 기능을 사용하세요."
 Scene.show_more_options.label,Show More Options,その他のオプションを表示,더 많은 옵션 보기
 Scene.show_more_options.desc,Shows more model options,,더 많은 모델 옵션 보기
 Scene.merge_mode.label,Merge Mode,マージモード,통합모드
@@ -875,28 +545,6 @@ IndexFinger(1-3)_(L/R)
 MiddleFinger(1-3)_(L/R)
 RingFinger(1-3)_(L/R)
 LittleFinger(1-3)_(L/R)"
-Scene.decimate_hands.label,Save Hands,手を救う,손 유지
-Scene.decimate_hands.desc,"Check this if you don't want to decimate your full hands!
-Results will be worse but there will be no issues with hand movement.
-This is probably only useful if you have a VR headset.
-
-This operation requires the finger and hand bones to be named specifically:
-Left/Right wrist
-Thumb(0-2)_(L/R)
-IndexFinger(1-3)_(L/R)
-MiddleFinger(1-3)_(L/R)
-RingFinger(1-3)_(L/R)
-LittleFinger(1-3)_(L/R)",,"손의 버텍스를 줄여 망치고 싶지 않다면 이것을 체크하세요!
-결과는 더 나빠질 수 있지만 손의 움직임에는 문제가 없습니다.
-아마 VR을 사용하는 경우에만 유용 할 것입니다.
-
-이 작업을 수행하려면 손가락과 손 뼈의 이름을 구체적으로 지정해야합니다.
-Left/Right wrist
-Thumb(0-2)_(L/R)
-IndexFinger(1-3)_(L/R)
-MiddleFinger(1-3)_(L/R)
-RingFinger(1-3)_(L/R)
-LittleFinger(1-3)_(L/R)"
 Scene.decimation_remove_doubles.label,Remove Doubles,重複を削除,이중 제거
 Scene.decimation_remove_doubles.desc,Uncheck this if you get issues with this checked,Uncheck this if you got issues with with this checked,문제가 될 시 체크를 해제하세요
 Scene.decimation_animation_weighting.label,Animation weighting,,
@@ -907,56 +555,6 @@ Scene.decimation_animation_weighting_factor.label,Factor,,
 Scene.decimation_animation_weighting_factor.desc,How much influence the animation weighting has on the overall shape,,
 Scene.max_tris.label,Tris,トリス,삼각폴리곤(Tris)
 Scene.max_tris.desc,The target amount of tris after decimation,,
-Scene.eye_mode.label,Eye Mode,アイモード,
-Scene.eye_mode.desc,Mode,,
-Scene.eye_mode.creation.label,Creation,創作,생성
-Scene.eye_mode.creation.desc,Here you can create eye tracking.,,
-Scene.eye_mode.testing.label,Testing,テスティング,테스트
-Scene.eye_mode.testing.desc,Here you can test how eye tracking will look in-game.,,
-Scene.mesh_name_eye.label,Mesh,メッシュ,메쉬
-Scene.mesh_name_eye.desc,The mesh with the eyes vertex groups,,
-Scene.head.label,Head,頭,머리
-Scene.head.desc,The head bone containing the eye bones,,
-Scene.eye_left.label,Left Eye,左目,왼쪽 눈
-Scene.eye_left.desc,The models left eye bone,,
-Scene.eye_right.label,Right Eye,右目,오른쪽 눈
-Scene.eye_right.desc,The models right eye bone,,
-Scene.wink_left.label,Blink Left,左点滅,왼쪽 깜빡임
-Scene.wink_left.desc,The shape key containing a blink with the left eye,,
-Scene.wink_right.label,Blink Right,右点滅,오른쪽 깜빡임
-Scene.wink_right.desc,The shape key containing a blink with the right eye,,
-Scene.lowerlid_left.label,Lowerlid Left,下まぶた左,왼쪽 아래 눈꺼풀
-Scene.lowerlid_left.desc,"The shape key containing a slightly raised left lower lid.
-Can be set to ""Basis"" to disable lower lid movement",,
-Scene.lowerlid_right.label,Lowerlid Right,下まぶた右,오른쪽 아래 눈꺼풀
-Scene.lowerlid_right.desc,"The shape key containing a slightly raised right lower lid.
-Can be set to ""Basis"" to disable lower lid movement",,
-Scene.disable_eye_movement.label,Disable Eye Movement,目の動きを無効にする,눈 움직임 비활성화
-Scene.disable_eye_movement.desc,"IMPORTANT: Do your decimation first if you check this!
-
-Disables eye movement. Useful if you only want blinking.
-This creates eye bones with no movement bound to them.
-You still have to assign ""LeftEye"" and ""RightEye"" to the eyes in Unity",,
-Scene.disable_eye_blinking.label,Disable Eye Blinking,瞬きを無効にする,눈 깜빡임 비활성화
-Scene.disable_eye_blinking.desc,"Disables eye blinking. Useful if you only want eye movement.
-This will create the necessary shape keys but leaves them empty",,
-Scene.eye_distance.label,Eye Movement Range,眼球運動範囲,눈 움직임 범위
-Scene.eye_distance.desc,"Higher = more eye movement
-Lower = less eye movement
-Warning: Too little or too much range can glitch the eyes.
-Test your results in the ""Eye Testing""-Tab!
-",,
-Scene.eye_rotation_x.label,Up - Down,上 - 下,위 - 아래
-Scene.eye_rotation_x.desc,Rotate the eye bones on the vertical axis,,
-Scene.eye_rotation_y.label,Left - Right,左 - 右,왼쪽 - 오른쪽
-Scene.eye_rotation_y.desc,"Rotate the eye bones on the horizontal axis.
-This is from your own point of view",,
-Scene.iris_height.label,Iris Height,アイリスの高さ,눈동자 높이
-Scene.iris_height.desc,Moves the iris away from the eye ball,,
-Scene.eye_blink_shape.label,Blink Strength,まばたきの強さ,깜빡임 강도
-Scene.eye_blink_shape.desc,Test the blinking of the eye,,
-Scene.eye_lowerlid_shape.label,Lowerlid Strength,下まぶたの強さ,아래 눈꺼풀 강도
-Scene.eye_lowerlid_shape.desc,Test the lowerlid blinking of the eye,,
 Scene.mesh_name_viseme.label,Mesh,メッシュ,메쉬
 Scene.mesh_name_viseme.desc,The mesh with the mouth shape keys,,
 Scene.mouth_a.label,Viseme AA,バイセム AA,발음 아(AA)
@@ -974,8 +572,6 @@ Scene.root_bone.label,To Parent,親に,부모쪽으로
 Scene.root_bone.desc,List of bones that look like they could be parented together to a root bone,,
 Scene.optimize_mode.label,Optimize Mode,最適化モード,최적화 모드
 Scene.optimize_mode.desc,Mode,,
-Scene.optimize_mode.atlas.label,Atlas,アトラス,
-Scene.optimize_mode.atlas.desc,Allows you to make a texture atlas.,,
 Scene.optimize_mode.material.label,Material,マテリアル,매테리얼
 Scene.optimize_mode.material.desc,Some various options on material manipulation.,,
 Scene.optimize_mode.bonemerging.label,Bone Merging,骨のマージ,본 통합
@@ -988,16 +584,12 @@ Scene.merge_mesh.label,Mesh,メッシュ,메쉬
 Scene.merge_mesh.desc,The mesh with the bones vertex groups,,
 Scene.merge_bone.label,To Merge,マージするには,통합할 부분
 Scene.merge_bone.desc,List of bones that look like they could be merged together to reduce overall bones,,
-Scene.show_mmd_tabs.label,Show mmd_tools,,mmd_tools 탭 보이기
-Scene.show_mmd_tabs.desc,"Allows you to hide/show the mmd_tools tabs ""MMD"" and ""Misc""",,
 Scene.embed_textures.label,Embed Textures on Export,エクスポート時にテクスチャを埋め込む,내보낼 때 텍스처 포함
 Scene.embed_textures.desc,"Enable this to embed the texture files into the FBX file upon export.
 Unity will automatically extract these textures and put them into a separate folder.
 This might not work for everyone and it increases the file size of the exported FBX file",,
 Scene.ui_lang.label,Cats Language,,
 Scene.ui_lang.desc,Lets you select which language the Cats interface should have,,
-Scene.use_custom_mmd_tools.label,Use Custom mmd_tools,カスタムmmd_toolsを使用する,커스텀 mmd_tools 사용
-Scene.use_custom_mmd_tools.desc,Enable this to use your own version of mmd_tools. This will disable the internal cats mmd_tools,,
 Scene.debug_translations.label,Debug Google Translations,Google翻訳をデバッグ,Google 번역 디버그
 Scene.debug_translations.desc,Tests the Google Translations and prints the Google response in case of error,,
 Scene.bake_resolution.label,Resolution,,해상도
@@ -1101,69 +693,4 @@ cats_bake.error.no_meshes,No meshes found!,,메쉬가 발견되지 않음!
 cats_bake.error.render_engine,You need to set your render engine to Cycles first!,,
 cats_bake.error.render_disabled,One or more of your armature's meshes have rendering disabled!,,
 cats_bake.info.success,Success! Textures and model saved to 'CATS Bake' folder next to your .blend file.,,
-CheckForUpdateButton.label,Check now for Update,今すぐアップデートを確認,업데이트 체크
-CheckForUpdateButton.desc,Checks if a new update is available for CATS,,
-UpdateToLatestButton.label,Update Now,今すぐアップデート,지금 업데이트
-UpdateToLatestButton.desc,Update CATS to the latest version,,
-UpdateToSelectedButton.label,Update to Selected version,選択したバージョンに更新,선택된 버전으로 업데이트
-UpdateToSelectedButton.desc,Update CATS to the selected version,,
-UpdateToDevButton.label,Update to Development version,開発版に更新,개발버전으로 업데이트
-UpdateToDevButton.desc,Update CATS to the Development version,,
-RemindMeLaterButton.label,Remind me later,後で通知する,나중에 다시보기
-RemindMeLaterButton.desc,This hides the update notification 'til the next Blender restart,,
-RemindMeLaterButton.success,You will be reminded later,,
-IgnoreThisVersionButton.label,Ignore this version,このバージョンを無視,이 버전은 무시하기
-IgnoreThisVersionButton.desc,This ignores this version. You will be reminded again when the next version releases,,
-IgnoreThisVersionButton.success,Version {name} will be ignored.,,
-ShowPatchnotesPanel.label,Patchnotes,パッチノート,패치노트
-ShowPatchnotesPanel.desc,Shows the patchnotes of the selected version,,
-ShowPatchnotesPanel.releaseDate,Released: {date},,
-ConfirmUpdatePanel.label,Confirm Update,アップデートを確認,업데이트 확인
-ConfirmUpdatePanel.desc,This shows you a panel in which you have to confirm your update choice,,
-ConfirmUpdatePanel.warn.dev1,Warning:,,
-ConfirmUpdatePanel.warn.dev2, The development version of CATS is the place where,,
-ConfirmUpdatePanel.warn.dev3, we test new features and bug fixes.,,
-ConfirmUpdatePanel.warn.dev4, This version might be very unstable and some features,,
-ConfirmUpdatePanel.warn.dev5, might not work correctly.,,
-ConfirmUpdatePanel.ShowPatchnotesPanel.label,Show Patchnotes,,패치노트 보기
-ConfirmUpdatePanel.updateNow,Update now:,,
-UpdateCompletePanel.label,Installation Report,インストールレポート,설치 보고
-UpdateCompletePanel.desc,The update is now complete,,
-UpdateCompletePanel.success1,CATS was successfully updated.,,
-UpdateCompletePanel.success2,Restart Blender to complete the update.,,
-UpdateCompletePanel.failure1,Update failed.,,
-UpdateCompletePanel.failure2,See Updater Panel for more info.,,
-UpdateNotificationPopup.label,Update available,アップデートが利用可能です,업데이트 가능
-UpdateNotificationPopup.desc,This shows you that an update is available,,
-UpdateNotificationPopup.newUpdate,CATS v{name} available!,,
-UpdateNotificationPopup.ShowPatchnotesPanel.label,Show Patchnotes,パッチノートを見る,패치노트 보기
-check_for_update.cantCheck,"Could not check for updates, try again later",,
-download_file.cantConnect,Could not connect to Github,,
-download_file.cantFindZip,Could not find the downloaded zip,,
-download_file.cantFindCATS,Could not find CATS in the downloaded zip,,
-draw_update_notification_panel.success,Restart Blender to complete update!,,
-draw_update_notification_panel.newUpdate,CATS v{name} available!,,
-draw_update_notification_panel.UpdateToLatestButton.label,Update Now,今すぐアップデート,지금 업데이트
-draw_update_notification_panel.RemindMeLaterButton.label,Remind me later,後で通知する,나중에 다시보기
-draw_update_notification_panel.IgnoreThisVersionButton.label,Ignore this version,このバージョンを無視,이 버전은 무시하기
-draw_updater_panel.updateLabel,Updates:,,
-draw_updater_panel.updateLabel_alt,CATS Updater:,,
-draw_updater_panel.success,Restart Blender to complete update!,,
-draw_updater_panel.CheckForUpdateButton.label,Checking..,チェック中..,확인 중..
-draw_updater_panel.UpdateToLatestButton.label,Update now to {name},今すぐ{name}に更新する,{name}로 업데이트
-draw_updater_panel.CheckForUpdateButton.label_alt,Check now for Update,今すぐアップデートを確認,업데이트 확인하기
-draw_updater_panel.UpdateToLatestButton.label_alt,Up to Date!,最新の!,현재 최신 버전입니다!
-draw_updater_panel.UpdateToSelectedButton.label,Install version:,インストールバージョン:,설치버전:
-draw_updater_panel.UpdateToDevButton.label,Install Development Version,開発バージョンのインストール,개발버전 설치
-draw_updater_panel.currentVersion,Current version: {name},,현재 버전: {name}
-bpy.types.Scene.cats_updater_version_list.label,Version,バージョン,버전
-bpy.types.Scene.cats_updater_version_list.desc,"Select the version you want to install
-",,
-bpy.types.Scene.cats_update_action.label,Choose action,アクションを選択,액션 선택
-bpy.types.Scene.cats_update_action.desc,Action,,
-bpy.types.Scene.cats_update_action.update.label,Update Now,今すぐアップデート,지금 업데이트
-bpy.types.Scene.cats_update_action.update.desc,Updates now to the latest version,,
-bpy.types.Scene.cats_update_action.ignore.label,Ignore this version,このバージョンを無視,이 버전은 무시하기
-bpy.types.Scene.cats_update_action.ignore.desc,This ignores this version. You will be reminded again when the next version releases,,
-bpy.types.Scene.cats_update_action.defer.label,Remind me later,後で通知する,나중에 다시보기
-bpy.types.Scene.cats_update_action.defer.desc,Hides the update notification til the next Blender restart,,
+ArmaturePanel.noModel,No model found. Import a model first.,,

@@ -10,39 +10,6 @@ from ..tools.register import register_wrap
 from ..tools.translations import t
 
 @register_wrap
-class AutoDecimatePresetGood(bpy.types.Operator):
-    bl_idname = 'cats_decimation.preset_good'
-    bl_label = t('DecimationPanel.preset.good.label')
-    bl_description = t('DecimationPanel.preset.good.description')
-    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-
-    def execute(self, context):
-        context.scene.max_tris = 70000
-        return {'FINISHED'}
-
-@register_wrap
-class AutoDecimatePresetExcellent(bpy.types.Operator):
-    bl_idname = 'cats_decimation.preset_excellent'
-    bl_label = t('DecimationPanel.preset.excellent.label')
-    bl_description = t('DecimationPanel.preset.excellent.description')
-    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-
-    def execute(self, context):
-        context.scene.max_tris = 32000
-        return {'FINISHED'}
-
-@register_wrap
-class AutoDecimatePresetQuest(bpy.types.Operator):
-    bl_idname = 'cats_decimation.preset_quest'
-    bl_label = t('DecimationPanel.preset.quest.label')
-    bl_description = t('DecimationPanel.preset.quest.description')
-    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-
-    def execute(self, context):
-        context.scene.max_tris = 5000
-        return {'FINISHED'}
-
-@register_wrap
 class DecimationPanel(ToolPanel, bpy.types.Panel):
     bl_idname = 'VIEW3D_PT_decimation_v3'
     bl_label = t('DecimationPanel.label')

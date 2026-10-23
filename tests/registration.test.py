@@ -118,6 +118,20 @@ for prop in removed_props:
     if hasattr(bpy.context.scene, prop):
         errors.append('Removed scene property still present: ' + prop)
 
+# Verify operator labels are translated (not raw CSV keys). A circular
+# import at module init previously left these as untranslated keys.
+expected_labels = {
+    'CATS_TRANSLATE_OT_shapekeys': 'Translate Shape Keys',
+    'CATS_TRANSLATE_OT_bones': 'Translate Bones',
+    'CATS_SETTINGS_OT_revert': 'Revert Settings',
+}
+for type_name, label in expected_labels.items():
+    cls = getattr(bpy.types, type_name, None)
+    if cls is None:
+        errors.append('Operator not registered for label check: ' + type_name)
+    elif cls.bl_label != label:
+        errors.append('Operator {} has untranslated bl_label: {!r}'.format(type_name, cls.bl_label))
+
 # Now unregister and verify clean unregistration
 try:
     cats.unregister()
@@ -131,6 +145,11 @@ for panel_id in expected_panels:
     cls = getattr(bpy.types, panel_id, None)
     if cls is not None:
         errors.append('Panel still registered after unregister: ' + panel_id)
+
+# Verify scene properties are removed after unregister
+for prop in expected_props + ['pose_to_shapekey_name']:
+    if hasattr(bpy.context.scene, prop):
+        errors.append('Scene property leaked after unregister: ' + prop)
 
 if errors:
     print('REGISTRATION TEST FAILED')

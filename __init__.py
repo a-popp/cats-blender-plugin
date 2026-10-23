@@ -25,9 +25,7 @@
 
 dev_branch = False
 
-import os
 import sys
-import pathlib
 
 from . import globs
 
@@ -141,6 +139,9 @@ def unregister():
     except AttributeError:
         print('shapekey button was not registered')
         pass
+
+    # Remove Scene properties
+    extensions.unregister()
 
     print("### Unloaded CATS successfully!\n")
 

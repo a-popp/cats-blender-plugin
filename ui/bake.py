@@ -1,5 +1,4 @@
 import bpy
-import addon_utils
 
 from .main import ToolPanel
 from ..tools import common as Common
@@ -84,7 +83,7 @@ class BakePanel(ToolPanel, bpy.types.Panel):
         col.label(text=t('BakePanel.bakepasseslabel'))
         row = col.row(align=True)
         row.prop(context.scene, 'bake_pass_diffuse', expand=True)
-        if context.scene.bake_pass_diffuse and bpy.app.version >= (2, 92, 0):
+        if context.scene.bake_pass_diffuse:
             row = col.row(align=True)
             row.separator()
             row.prop(context.scene, 'bake_diffuse_vertex_colors', expand=True)
@@ -156,6 +155,3 @@ class BakePanel(ToolPanel, bpy.types.Panel):
         row.prop(context.scene, 'bake_device', expand=True)
         row = col.row(align=True)
         row.operator(Bake.BakeButton.bl_idname, icon='RENDER_STILL')
-        if not addon_utils.check("render_auto_tile_size")[1]:
-            row = col.row(align=True)
-            row.label(text="Enabling \"Auto Tile Size\" reccomended!", icon="INFO")

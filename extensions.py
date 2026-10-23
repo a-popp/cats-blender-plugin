@@ -5,15 +5,19 @@ from .tools import translations as Translations
 from .tools.translations import t
 
 from bpy.types import Scene
-from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, StringProperty
+
+_registered_scene_props = []
 
 
 def register():
+    unregister()
+    existing_props = set(Scene.bl_rna.properties.keys())
+
     Scene.armature = EnumProperty(
         name=t('Scene.armature.label'),
         description=t('Scene.armature.desc'),
-        items=Common.get_armature_list,
-        update=Common.update_material_list
+        items=Common.get_armature_list
     )
 
     Scene.keep_upper_chest = BoolProperty(
@@ -22,52 +26,10 @@ def register():
         default=True
     )
 
-    Scene.combine_mats = BoolProperty(
-        name=t('Scene.combine_mats.label'),
-        description=t('Scene.combine_mats.desc'),
-        default=False
-    )
-
-    Scene.remove_zero_weight = BoolProperty(
-        name=t('Scene.remove_zero_weight.label'),
-        description=t('Scene.remove_zero_weight.desc'),
-        default=True
-    )
-
     Scene.keep_end_bones = BoolProperty(
         name=t('Scene.keep_end_bones.label'),
         description=t('Scene.keep_end_bones.desc'),
         default=False
-    )
-
-    Scene.keep_twist_bones = BoolProperty(
-        name=t('Scene.keep_twist_bones.label'),
-        description=t('Scene.keep_twist_bones.desc'),
-        default=False
-    )
-
-    Scene.fix_twist_bones = BoolProperty(
-        name=t('Scene.fix_twist_bones.label'),
-        description=t('Scene.fix_twist_bones.desc'),
-        default=True
-    )
-
-    Scene.join_meshes = BoolProperty(
-        name=t('Scene.join_meshes.label'),
-        description=t('Scene.join_meshes.desc'),
-        default=True
-    )
-
-    Scene.connect_bones = BoolProperty(
-        name=t('Scene.connect_bones.label'),
-        description=t('Scene.connect_bones.desc'),
-        default=True
-    )
-
-    Scene.fix_materials = BoolProperty(
-        name=t('Scene.fix_materials.label'),
-        description=t('Scene.fix_materials.desc'),
-        default=True
     )
 
     Scene.remove_rigidbodies_joints = BoolProperty(
@@ -453,11 +415,6 @@ def register():
         description=t('Scene.decimate_fingers.desc')
     )
 
-    Scene.decimate_hands = BoolProperty(
-        name=t('Scene.decimate_hands.label'),
-        description=t('Scene.decimate_hands.desc')
-    )
-
     Scene.decimation_remove_doubles = BoolProperty(
         name=t('Scene.decimation_remove_doubles.label'),
         description=t('Scene.decimation_remove_doubles.desc'),
@@ -567,3 +524,15 @@ def register():
         description=t('Scene.debug_translations.desc'),
         default=False
     )
+
+    Scene.pose_to_shapekey_name = StringProperty(name="Pose Name")
+
+    _registered_scene_props[:] = [
+        name for name in Scene.bl_rna.properties.keys() if name not in existing_props
+    ]
+
+
+def unregister():
+    for name in _registered_scene_props:
+        delattr(Scene, name)
+    del _registered_scene_props[:]

@@ -490,18 +490,6 @@ def get_meshes_decimation(self, context):
     return bpy.types.Object.Enum
 
 
-def get_bones_head(self, context):
-    return get_bones(names=['Head'])
-
-
-def get_bones_eye_l(self, context):
-    return get_bones(names=['Eye_L', 'EyeReturn_L'])
-
-
-def get_bones_eye_r(self, context):
-    return get_bones(names=['Eye_R', 'EyeReturn_R'])
-
-
 def get_bones_merge(self, context):
     return get_bones(armature_name=bpy.context.scene.merge_armature_into)
 
@@ -561,22 +549,6 @@ def get_shapekeys_mouth_ch(self, context):
     return get_shapekeys(context, ['MTH I', 'Glue', 'Ch', 'I', 'There'], True, False, False, False)
 
 
-def get_shapekeys_eye_blink_l(self, context):
-    return get_shapekeys(context, ['EYE Close L', 'Wink 2', 'Wink', 'Wink left', 'Wink Left', 'Blink (Left)', 'Blink', 'Basis'], False, False, False, False)
-
-
-def get_shapekeys_eye_blink_r(self, context):
-    return get_shapekeys(context, ['EYE Close R', 'Wink 2 right', 'Wink 2 Right', 'Wink right 2', 'Wink Right 2', 'Wink right', 'Wink Right', 'Blink (Right)', 'Basis'], False, False, False, False)
-
-
-def get_shapekeys_eye_low_l(self, context):
-    return get_shapekeys(context, ['Basis'], False, False, False, False)
-
-
-def get_shapekeys_eye_low_r(self, context):
-    return get_shapekeys(context, ['Basis'], False, False, False, False)
-
-
 def get_shapekeys_decimation(self, context):
     return get_shapekeys(context,
                          ['MTH A', 'Ah', 'A', 'MTH U', 'Oh', 'O', 'Your', 'MTH I', 'Glue', 'Ch', 'I', 'There', 'Wink 2', 'Wink', 'Wink left', 'Wink Left', 'Blink (Left)', 'Wink 2 right',
@@ -602,7 +574,7 @@ def get_shapekeys(context, names, is_mouth, no_basis, decimation, return_list):
         if is_mouth:
             meshes = [get_objects().get(context.scene.mesh_name_viseme)]
         else:
-            meshes = [get_objects().get(context.scene.mesh_name_eye)]
+            meshes = [get_objects().get(context.scene.mesh_name_viseme)]
     else:
         bpy.types.Object.Enum = choices
         return bpy.types.Object.Enum
@@ -836,9 +808,6 @@ def join_meshes(armature_name=None, mode=0, apply_transformations=True, repair_s
 
     reset_context_scenes()
 
-    # Update the material list of the Material Combiner
-    update_material_list()
-
     return mesh
 
 
@@ -955,9 +924,6 @@ def separate_by_materials(context, mesh):
 
     _clear_unused_meshes()
 
-    # Update the material list of the Material Combiner
-    update_material_list()
-
 
 def separate_by_loose_parts(context, mesh):
     prepare_separation(mesh)
@@ -1007,9 +973,6 @@ def separate_by_loose_parts(context, mesh):
 
     _clear_unused_meshes()
 
-    # Update the material list of the Material Combiner
-    update_material_list()
-
 
 def separate_by_shape_keys(context, mesh):
     prepare_separation(mesh)
@@ -1053,9 +1016,6 @@ def separate_by_shape_keys(context, mesh):
                 switch('OBJECT')
 
     _clear_unused_meshes()
-
-    # Update the material list of the Material Combiner
-    update_material_list()
     return True
 
 
@@ -1117,17 +1077,9 @@ def separate_by_verts():
 
 
 def reset_context_scenes():
-    head_bones = get_bones_head(None, bpy.context)
-    if len(head_bones) > 0:
-        bpy.context.scene.head = head_bones[0][0]
-        bpy.context.scene.eye_left = get_bones_eye_l(None, bpy.context)[0][0]
-        bpy.context.scene.eye_right = get_bones_eye_r(None, bpy.context)[0][0]
-
     meshes = get_meshes(None, bpy.context)
     if len(meshes) > 0:
         mesh = meshes[0][0]
-        if not bpy.context.scene.mesh_name_eye:
-            bpy.context.scene.mesh_name_eye = mesh
         if not bpy.context.scene.mesh_name_viseme:
             bpy.context.scene.mesh_name_viseme = mesh
         if not bpy.context.scene.merge_mesh:
@@ -1792,274 +1744,6 @@ def fix_bone_orientations(armature):
                 bone.tail = bone.children[0].head
                 if len(bone.parent.children) == 1:  # if the bone's parent bone only has one child, connect the bones (Don't connect them all because that would mess up hand/finger bones)
                     bone.use_connect = True
-
-
-def update_material_list(self=None, context=None):
-    try:
-        if hasattr(bpy.context.scene, 'smc_ob_data') and bpy.context.scene.smc_ob_data:
-            bpy.ops.smc.refresh_ob_data()
-    except AttributeError:
-        print('Material Combiner not found')
-
-
-def unify_materials():
-    textures = []  # TODO
-
-    for ob in get_objects():
-        if ob.type == "MESH":
-            for mat_slot in ob.material_slots:
-                if mat_slot.material:
-                    mat_slot.material.blend_method = 'HASHED'
-                    # mat_slot.material.blend_method = 'BLEND'  # Use this for transparent textures only
-                    print('MAT: ', mat_slot.material.name)
-                    if mat_slot.material.node_tree:
-                        nodes = mat_slot.material.node_tree.nodes
-                        image = None
-                        for node in nodes:
-                            # print(' ' + node.name + ', ' + node.type + ', ' + node.label)
-                            if node.type == 'TEX_IMAGE' and 'toon' not in node.name and 'sphere' not in node.name:
-                                image = node.image
-                                # textures.append(node.image.name)
-                            mat_slot.material.node_tree.nodes.remove(node)
-
-                        # Create Image node
-                        node_texture = nodes.new(type='ShaderNodeTexImage')
-                        node_texture.location = 0, 0
-                        node_texture.image = image
-                        node_texture.label = 'Cats Texture'
-
-                        # Create Principled BSDF node
-                        node_prinipled = nodes.new(type='ShaderNodeBsdfPrincipled')
-                        node_prinipled.location = 300, -220
-                        node_prinipled.label = 'Cats Emission'
-                        node_prinipled.inputs['Specular'].default_value = 0
-                        node_prinipled.inputs['Roughness'].default_value = 0
-                        node_prinipled.inputs['Sheen Tint'].default_value = 0
-                        node_prinipled.inputs['Clearcoat Roughness'].default_value = 0
-                        node_prinipled.inputs['IOR'].default_value = 0
-
-                        # Create Transparency BSDF node
-                        node_transparent = nodes.new(type='ShaderNodeBsdfTransparent')
-                        node_transparent.location = 325, -100
-                        node_transparent.label = 'Cats Transparency'
-
-                        # Create Mix Shader node
-                        node_mix = nodes.new(type='ShaderNodeMixShader')
-                        node_mix.location = 600, 0
-                        node_mix.label = 'Cats Mix'
-
-                        # Create Output node
-                        node_output = nodes.new(type='ShaderNodeOutputMaterial')
-                        node_output.location = 800, 0
-                        node_output.label = 'Cats Output'
-
-                        # Create 2nd Output node
-                        node_output2 = nodes.new(type='ShaderNodeOutputMaterial')
-                        node_output2.location = 800, -200
-                        node_output2.label = 'Cats Export'
-
-                        # Link nodes together
-                        mat_slot.material.node_tree.links.new(node_texture.outputs['Color'], node_prinipled.inputs['Base Color'])
-                        mat_slot.material.node_tree.links.new(node_texture.outputs['Alpha'], node_mix.inputs['Fac'])
-
-                        mat_slot.material.node_tree.links.new(node_prinipled.outputs['BSDF'], node_mix.inputs[2])
-                        mat_slot.material.node_tree.links.new(node_transparent.outputs['BSDF'], node_mix.inputs[1])
-
-                        mat_slot.material.node_tree.links.new(node_mix.outputs['Shader'], node_output.inputs['Surface'])
-
-                        mat_slot.material.node_tree.links.new(node_prinipled.outputs['BSDF'], node_output2.inputs['Surface'])
-
-                    # break
-
-    print(textures, len(textures))
-    return {'FINISHED'}
-
-
-def add_principled_shader(mesh):
-    # This adds a principled shader and material output node in order for
-    # Unity to automatically detect exported materials
-    principled_shader_pos = (501, -500)
-    output_shader_pos = (801, -500)
-    principled_shader_label = 'Cats Export Shader'
-    output_shader_label = 'Cats Export'
-
-    for mat_slot in mesh.material_slots:
-        if mat_slot.material and mat_slot.material.node_tree:
-            nodes = mat_slot.material.node_tree.nodes
-            node_image = None
-            node_image_count = 0
-
-            # Check if the new nodes should be added and to which image node they should be attached to
-            for node in nodes:
-                # Cancel if the cats nodes are already found
-                if node.type == 'BSDF_PRINCIPLED' and node.label == principled_shader_label:
-                    node_image = None
-                    break
-                if node.type == 'OUTPUT_MATERIAL' and node.label == output_shader_label:
-                    node_image = None
-                    break
-
-                # Skip if this node is not an image node
-                if node.type != 'TEX_IMAGE':
-                    continue
-                node_image_count += 1
-
-                # If an mmd_texture is found, link it to the principled shader later
-                if node.name == 'mmd_base_tex' or node.label == 'MainTexture':
-                    node_image = node
-                    node_image_count = 0
-                    break
-
-                # This is an image node, so link it to the principled shader later
-                node_image = node
-
-            if not node_image or node_image_count > 1:
-                continue
-
-            # Create Principled BSDF node
-            node_prinipled = nodes.new(type='ShaderNodeBsdfPrincipled')
-            node_prinipled.label = 'Cats Export Shader'
-            node_prinipled.location = principled_shader_pos
-            node_prinipled.inputs['Specular'].default_value = 0
-            node_prinipled.inputs['Roughness'].default_value = 0
-            node_prinipled.inputs['Sheen Tint'].default_value = 0
-            node_prinipled.inputs['Clearcoat Roughness'].default_value = 0
-            node_prinipled.inputs['IOR'].default_value = 0
-
-            # Create Output node for correct image exports
-            node_output = nodes.new(type='ShaderNodeOutputMaterial')
-            node_output.label = 'Cats Export'
-            node_output.location = output_shader_pos
-
-            # Link nodes together
-            mat_slot.material.node_tree.links.new(node_image.outputs['Color'], node_prinipled.inputs['Base Color'])
-            mat_slot.material.node_tree.links.new(node_prinipled.outputs['BSDF'], node_output.inputs['Surface'])
-
-
-def remove_toon_shader(mesh):
-    for mat_slot in mesh.material_slots:
-        if mat_slot.material and mat_slot.material.node_tree:
-            nodes = mat_slot.material.node_tree.nodes
-            for node in nodes:
-                if node.name == 'mmd_toon_tex':
-                    print('Toon tex removed from material', mat_slot.material.name)
-                    nodes.remove(node)
-                    # if not node.image or not node.image.filepath:
-                    #     print('Toon tex removed: Empty, from material', mat_slot.material.name)
-                    #     nodes.remove(node)
-                    #     continue
-                    #
-                    # image_filepath = bpy.path.abspath(node.image.filepath)
-                    # if not os.path.isfile(image_filepath):
-                    #     print('Toon tex removed:', node.image.name, 'from material', mat_slot.material.name)
-                    #     nodes.remove(node)
-
-
-def fix_mmd_shader(mesh):
-    for mat_slot in mesh.material_slots:
-        if mat_slot.material and mat_slot.material.node_tree:
-            nodes = mat_slot.material.node_tree.nodes
-            for node in nodes:
-                if node.name == 'mmd_shader':
-                    node.inputs['Reflect'].default_value = 1
-
-
-def fix_vrm_shader(mesh):
-    for mat_slot in mesh.material_slots:
-        if mat_slot.material and mat_slot.material.node_tree:
-            is_vrm_mat = False
-            nodes = mat_slot.material.node_tree.nodes
-            for node in nodes:
-                if hasattr(node, 'node_tree') and 'MToon_unversioned' in node.node_tree.name:
-                    node.location[0] = 200
-                    node.inputs['ReceiveShadow_Texture_alpha'].default_value = -10000
-                    node.inputs['ShadeTexture'].default_value = (1.0, 1.0, 1.0, 1.0)
-                    node.inputs['Emission_Texture'].default_value = (0.0, 0.0, 0.0, 0.0)
-                    node.inputs['SphereAddTexture'].default_value = (0.0, 0.0, 0.0, 0.0)
-
-                    # Support typo in old vrm importer
-                    node_input = node.inputs.get('NomalmapTexture')
-                    if not node_input:
-                        node_input = node.inputs.get('NormalmapTexture')
-                    node_input.default_value = (1.0, 1.0, 1.0, 1.0)
-
-                    is_vrm_mat = True
-                    break
-            if not is_vrm_mat:
-                continue
-
-            nodes_to_keep = ['DiffuseColor', 'MainTexture', 'Emission_Texture']
-            if 'HAIR' in mat_slot.material.name:
-                nodes_to_keep = ['DiffuseColor', 'MainTexture', 'Emission_Texture', 'SphereAddTexture']
-
-            for node in nodes:
-                # Delete all unneccessary nodes
-                if 'RGB' in node.name \
-                        or 'Value' in node.name \
-                        or 'Image Texture' in node.name \
-                        or 'UV Map' in node.name \
-                        or 'Mapping' in node.name:
-                    if node.label not in nodes_to_keep:
-                        for output in node.outputs:
-                            for link in output.links:
-                                mat_slot.material.node_tree.links.remove(link)
-                        continue
-
-                # if hasattr(node, 'node_tree') and 'matcap_vector' in node.node_tree.name:
-                #     for output in node.outputs:
-                #         for link in output.links:
-                #             mat_slot.material.node_tree.links.remove(link)
-                #     continue
-
-
-def fix_twist_bones(mesh, bones_to_delete):
-    # This will fix MMD twist bones
-
-    for bone_type in ['Hand', 'Arm']:
-        for suffix in ['L', 'R']:
-            prefix = 'Left' if suffix == 'L' else 'Right'
-            bone_parent_name = prefix + ' ' + ('elbow' if bone_type == 'Hand' else 'arm')
-
-            vg_twist = mesh.vertex_groups.get(bone_type + 'Twist_' + suffix)
-            vg_parent = mesh.vertex_groups.get(bone_parent_name)
-
-            if not vg_twist:
-                print('1. no ' + bone_type + 'Twist_' + suffix)
-                continue
-            if not vg_parent:
-                print('2. no ' + bone_parent_name)
-                vg_parent = mesh.vertex_groups.new(name=bone_parent_name)
-
-            vg_twist1 = mesh.vertex_groups.get(bone_type + 'Twist1_' + suffix)
-            vg_twist2 = mesh.vertex_groups.get(bone_type + 'Twist2_' + suffix)
-            vg_twist3 = mesh.vertex_groups.get(bone_type + 'Twist3_' + suffix)
-
-            mix_weights(mesh, vg_twist.name, vg_parent.name, mix_strength=0.2, delete_old_vg=False)
-            mix_weights(mesh, vg_twist.name, vg_twist.name, mix_strength=0.2, mix_mode='SUB', delete_old_vg=False)
-
-            if vg_twist1:
-                bones_to_delete.append(vg_twist1.name)
-                mix_weights(mesh, vg_twist1.name, vg_twist.name, mix_strength=0.25, delete_old_vg=False)
-                mix_weights(mesh, vg_twist1.name, vg_parent.name, mix_strength=0.75)
-
-            if vg_twist2:
-                bones_to_delete.append(vg_twist2.name)
-                mix_weights(mesh, vg_twist2.name, vg_twist.name, mix_strength=0.5, delete_old_vg=False)
-                mix_weights(mesh, vg_twist2.name, vg_parent.name, mix_strength=0.5)
-
-            if vg_twist3:
-                bones_to_delete.append(vg_twist3.name)
-                mix_weights(mesh, vg_twist3.name, vg_twist.name, mix_strength=0.75, delete_old_vg=False)
-                mix_weights(mesh, vg_twist3.name, vg_parent.name, mix_strength=0.25)
-
-
-def fix_twist_bone_names(armature):
-    # This will fix MMD twist bone names after the vertex groups have been fixed
-    for bone_type in ['Hand', 'Arm']:
-        for suffix in ['L', 'R']:
-            bone_twist = armature.data.edit_bones.get(bone_type + 'Twist_' + suffix)
-            if bone_twist:
-                bone_twist.name = 'z' + bone_twist.name
 
 
 """ === THIS CODE COULD BE USEFUL === """

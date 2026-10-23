@@ -105,5 +105,14 @@ def toposort(deps_dict):
                 sorted_values.add(value)
             else:
                 unsorted.append(value)
-        deps_dict = {value : deps_dict[value] - sorted_values for value in unsorted}
+        if not unsorted:
+            break
+        new_deps_dict = {value : deps_dict[value] - sorted_values for value in unsorted}
+        if new_deps_dict == deps_dict:
+            # Cyclic dependency: keep remaining classes in their original order
+            print('Warning: cyclic class dependencies detected, registering unsorted:',
+                  [cls.__name__ for cls in new_deps_dict])
+            sorted_list.extend(unsorted)
+            break
+        deps_dict = new_deps_dict
     return sorted_list
