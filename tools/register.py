@@ -59,12 +59,12 @@ def order_classes():
     # Put all the UI into the list first
     __bl_ordered_classes = []
     for cls in __bl_classes:
-        if cls.__module__.startswith('ui.'):
+        if '.ui.' in cls.__module__ or cls.__module__.startswith('ui.'):
             __bl_ordered_classes.append(cls)
 
     # Then put everything else sorted into the list
     for cls in toposort(deps_dict):
-        if not cls.__module__.startswith('ui.'):
+        if not ('.ui.' in cls.__module__ or cls.__module__.startswith('ui.')):
             __bl_ordered_classes.append(cls)
 
 

@@ -54,10 +54,10 @@ class ShapeKeyApplier(bpy.types.Operator):
         if ' - Reverted' in new_basis_shapekey_name and new_basis_shapekey.relative_key.name != 'Basis':
             for shapekey in mesh.data.shape_keys.key_blocks:
                 if ' - Reverted' in shapekey.name and shapekey.relative_key.name == 'Basis':
-                    Common.show_error(t('ShapeKeyApplier.error.revert.scale'), t('ShapeKeyApplier.error.revert', name=shapekey.name))
+                    Common.show_error(float(t('ShapeKeyApplier.error.revert.scale')), t('ShapeKeyApplier.error.revert', name=shapekey.name))
                     return {'FINISHED'}
 
-            Common.show_error(t('ShapeKeyApplier.error.revert.scale'), t('ShapeKeyApplier.error.revert'))
+            Common.show_error(float(t('ShapeKeyApplier.error.revert.scale')), t('ShapeKeyApplier.error.revert'))
             return {'FINISHED'}
 
         # Set up shape keys

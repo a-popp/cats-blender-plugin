@@ -248,8 +248,8 @@ class BakeButton(bpy.types.Operator):
         # For all materials in use, change any value node labeled "bake_<bake_name>" to 1.0, then back to 0.0.
         for obj in objects:
             for slot in obj.material_slots:
-                if slot.material:
-                    for node in obj.active_material.node_tree.nodes:
+                if slot.material and slot.material.node_tree:
+                    for node in slot.material.node_tree.nodes:
                         if node.type == "VALUE" and node.label == "bake_" + bake_name:
                             node.outputs["Value"].default_value = 1
 
@@ -298,8 +298,8 @@ class BakeButton(bpy.types.Operator):
         # For all materials in use, change any value node labeled "bake_<bake_name>" to 1.0, then back to 0.0.
         for obj in objects:
             for slot in obj.material_slots:
-                if slot.material:
-                    for node in obj.active_material.node_tree.nodes:
+                if slot.material and slot.material.node_tree:
+                    for node in slot.material.node_tree.nodes:
                         if node.type == "VALUE" and node.label == "bake_" + bake_name:
                             node.outputs["Value"].default_value = 0
 
@@ -368,18 +368,20 @@ class BakeButton(bpy.types.Operator):
         context.scene.decimation_remove_doubles = context.scene.bake_remove_doubles
         context.scene.decimation_animation_weighting = context.scene.bake_animation_weighting
         context.scene.decimation_animation_weighting_factor = context.scene.bake_animation_weighting_factor
-        self.perform_bake(context)
+        orig_scene = context.scene
+        try:
+            self.perform_bake(context)
+        finally:
+            orig_scene.decimation_mode = decimation_mode
+            orig_scene.max_tris = max_tris
+            orig_scene.decimate_fingers = decimate_fingers
+            orig_scene.decimation_remove_doubles = decimation_remove_doubles
+            orig_scene.decimation_animation_weighting = decimation_animation_weighting
+            orig_scene.decimation_animation_weighting_factor = decimation_animation_weighting_factor
 
-        context.scene.decimation_mode = decimation_mode
-        context.scene.max_tris = max_tris
-        context.scene.decimate_fingers = decimate_fingers
-        context.scene.decimation_remove_doubles = decimation_remove_doubles
-        context.scene.decimation_animation_weighting = decimation_animation_weighting
-        context.scene.decimation_animation_weighting_factor = decimation_animation_weighting_factor
-
-        # Change render engine back to original
-        context.scene.render.engine = render_engine_tmp
-        context.scene.cycles.device = render_device_tmp
+            # Change render engine back to original
+            orig_scene.render.engine = render_engine_tmp
+            orig_scene.cycles.device = render_device_tmp
 
         return {'FINISHED'}
 
@@ -444,6 +446,19 @@ class BakeButton(bpy.types.Operator):
         orig_scene = bpy.data.scenes[orig_scene_name]
         context.scene.collection.children.link(collection)
 
+        # The new EMPTY scene defaults to Eevee and has default CATS
+        # settings: switch it to Cycles (bpy.ops.object.bake requires it)
+        # and copy the decimation settings execute() applied to the
+        # original scene, otherwise decimation silently uses defaults.
+        context.scene.render.engine = 'CYCLES'
+        context.scene.cycles.device = orig_scene.cycles.device
+        context.scene.decimation_mode = orig_scene.decimation_mode
+        context.scene.max_tris = orig_scene.max_tris
+        context.scene.decimate_fingers = orig_scene.decimate_fingers
+        context.scene.decimation_remove_doubles = orig_scene.decimation_remove_doubles
+        context.scene.decimation_animation_weighting = orig_scene.decimation_animation_weighting
+        context.scene.decimation_animation_weighting_factor = orig_scene.decimation_animation_weighting_factor
+
 
         # Make sure all armature modifiers target the new armature
         for child in collection.all_objects:
@@ -484,6 +499,7 @@ class BakeButton(bpy.types.Operator):
                             child.data.uv_layers.active = uvmap
                             active_uv = uvmap
                     reproject_anyway = (len(child.data.uv_layers) == 0 or
+                                        active_uv is None or
                                         all(set(loop.uv[:]).issubset({0,1}) for loop in active_uv.data))
                     bpy.ops.mesh.uv_texture_add()
                     child.data.uv_layers[-1].name = 'CATS UV'
@@ -517,7 +533,8 @@ class BakeButton(bpy.types.Operator):
                         if "Target" in child.data.uv_layers:
                             for idx, loop in enumerate(child.data.uv_layers["Target"].data):
                                 child.data.uv_layers["CATS UV"].data[idx].uv = loop.uv
-                                child.data.uv_layers["CATS UV Super"].data[idx].uv = loop.uv
+                                if "CATS UV Super" in child.data.uv_layers:
+                                    child.data.uv_layers["CATS UV Super"].data[idx].uv = loop.uv
 
             # Select all meshes. Select all UVs. Average islands scale
             for layer in cats_uv_layers:
@@ -764,10 +781,11 @@ class BakeButton(bpy.types.Operator):
             self.bake_pass(context, "ao", "AO", {"AO"}, [obj for obj in collection.all_objects if obj.type == "MESH"],
                            (resolution, resolution), 512, 0, [1.0, 1.0, 1.0, 1.0], True, int(margin * resolution / 2))
             if illuminate_eyes:
-                if "leyemask" in obj.modifiers:
-                    obj.modifiers.remove(leyemask)
-                if "reyemask" in obj.modifiers:
-                    obj.modifiers.remove(reyemask)
+                for obj in collection.all_objects:
+                    if "leyemask" in obj.modifiers:
+                        obj.modifiers.remove(obj.modifiers["leyemask"])
+                    if "reyemask" in obj.modifiers:
+                        obj.modifiers.remove(obj.modifiers["reyemask"])
 
         # Blend diffuse and AO to create Quest Diffuse (if selected)
         if pass_diffuse and pass_ao and pass_questdiffuse:
@@ -968,10 +986,8 @@ class BakeButton(bpy.types.Operator):
         # Always remove existing vertex colors here
         for obj in collection.all_objects:
             if obj.type == "MESH":
-                if obj.data.vertex_colors is not None and len(obj.data.vertex_colors) > 0:
-                    while len(obj.data.vertex_colors) > 0:
-                        context.view_layer.objects.active = obj
-                        bpy.ops.mesh.vertex_color_remove()
+                for attr in list(obj.data.color_attributes):
+                    obj.data.color_attributes.remove(attr)
 
         # Update generated material to preview all of our passes
         if pass_normal:
@@ -1057,7 +1073,8 @@ class BakeButton(bpy.types.Operator):
             for obj in collection.all_objects:
                 if obj.type == "MESH":
                     context.view_layer.objects.active = obj
-                    bpy.ops.mesh.vertex_color_add()
+                    attr = obj.data.color_attributes.new(name='Col', type='BYTE_COLOR', domain='CORNER')
+                    obj.data.color_attributes.render_color_index = len(obj.data.color_attributes) - 1
 
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic Rotation")
             self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", 0.0)
@@ -1176,8 +1193,8 @@ class BakeButton(bpy.types.Operator):
         if pass_metallic:
             bpy.data.images["SCRIPT_metallic.png"].save()
         if optimize_static:
-            with open(os.path.dirname(os.path.abspath(__file__)) + "/../resources/BakeFixer.cs", 'r') as infile:
-                with open(bpy.path.abspath("//CATS Bake/") + "BakeFixer.cs", 'w') as outfile:
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "resources", "BakeFixer.cs"), 'r') as infile:
+                with open(os.path.join(bpy.path.abspath("//CATS Bake/"), "BakeFixer.cs"), 'w') as outfile:
                     for line in infile:
                         outfile.write(line)
 

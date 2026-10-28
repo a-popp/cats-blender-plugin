@@ -54,7 +54,11 @@ class BoneMergeButton(bpy.types.Operator):
         saved_data = Common.SavedData()
         armature = Common.set_default_stage()
 
-        parent_bones = globs.root_bones[context.scene.merge_bone]
+        parent_bones = globs.root_bones.get(context.scene.merge_bone)
+        if not parent_bones:
+            self.report({'ERROR'}, t('BoneMergeButton.error.noBones'))
+            saved_data.load()
+            return {'CANCELLED'}
         mesh = Common.get_objects()[context.scene.merge_mesh]
         ratio = context.scene.merge_ratio
         # debug

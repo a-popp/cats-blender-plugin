@@ -78,7 +78,7 @@ jobs:
                           if stripped.startswith('#'):
                               continue
                           for mod in deleted_modules:
-                              if re.search(r'\b(import|from)\s+' + re.escape(mod), line):
+                              if re.search(r'\b(import|from)\s+' + re.escape(mod) + r'\b', line):
                                   errors.append(f'{path}:{i}: {stripped}')
                           for cat in removed_operator_categories:
                               if 'bpy.ops.' + cat in line:
@@ -150,6 +150,22 @@ jobs:
       - name: Run export test
         run: |
           python tests/run.py -b blender -t export -c true -v true
+
+      - name: Run join meshes test
+        run: |
+          python tests/run.py -b blender -t joinmeshes -c true -v true
+
+      - name: Run settings test
+        run: |
+          python tests/run.py -b blender -t settings -c true -v true
+
+      - name: Run decimation test
+        run: |
+          python tests/run.py -b blender -t decimation -c true -v true
+
+      - name: Run bake test
+        run: |
+          python tests/run.py -b blender -t bake -c true -v true
 
       - name: Upload extension package
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'

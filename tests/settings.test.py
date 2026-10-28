@@ -20,10 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Settings test: verify settings load/save round-trip and that
-# update_settings() reports whether settings changed (it previously
-# returned None unconditionally, so the ui_lang update callback could
-# never trigger the UI reload).
+# Settings test: verify the settings load/save round-trip, that scene
+# property changes persist via the update_settings callback, and that
+# cats_settings.revert restores persisted values.
 
 import sys
 import os

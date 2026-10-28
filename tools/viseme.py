@@ -46,9 +46,9 @@ class AutoVisemeButton(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        mesh = Common.get_objects()[context.scene.mesh_name_viseme]
+        mesh = Common.get_objects().get(context.scene.mesh_name_viseme)
 
-        if not Common.has_shapekeys(mesh):
+        if mesh is None or not Common.has_shapekeys(mesh):
             self.report({'ERROR'}, t('AutoVisemeButton.error.noShapekeys'))
             return {'CANCELLED'}
 
@@ -76,18 +76,15 @@ class AutoVisemeButton(bpy.types.Operator):
         mesh = Common.get_objects()[context.scene.mesh_name_viseme]
         for index, shapekey in enumerate(mesh.data.shape_keys.key_blocks):
             if shapekey.name == context.scene.mouth_a:
-                print(shapekey.name + " " + context.scene.mouth_a)
                 shapekey.name = shapekey.name + "_old"
                 context.scene.mouth_a = shapekey.name
                 renamed_shapes[0] = shapekey.name
             if shapekey.name == context.scene.mouth_o:
-                print(shapekey.name + " " + context.scene.mouth_a)
                 if context.scene.mouth_a != context.scene.mouth_o:
                     shapekey.name = shapekey.name + "_old"
                 context.scene.mouth_o = shapekey.name
                 renamed_shapes[1] = shapekey.name
             if shapekey.name == context.scene.mouth_ch:
-                print(shapekey.name + " " + context.scene.mouth_a)
                 if context.scene.mouth_a != context.scene.mouth_ch and context.scene.mouth_o != context.scene.mouth_ch:
                     shapekey.name = shapekey.name + "_old"
                 context.scene.mouth_ch = shapekey.name

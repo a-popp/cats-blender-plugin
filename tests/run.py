@@ -24,6 +24,7 @@ import time
 import glob
 import sys
 import os
+import tempfile
 import itertools
 from subprocess import Popen, PIPE
 from optparse import OptionParser
@@ -128,18 +129,24 @@ for file in test_files:
 
     # Tests that don't need a blend file run with --factory-startup only
     # Tests that generate their own fixtures do so inside the test script
-    p = Popen([blender_exec, '--factory-startup', '-noaudio', '-b', '--python-expr', bootstrap, '--python', file], shell=False, stdout=PIPE, stderr=PIPE)
-
-    if ci is False:
-        while p.poll() is None:
-            sys.stdout.write('\r' + next(spinner) + ' running ' + basename + '...')
+    cmd = [blender_exec, '--factory-startup', '-noaudio', '-b', '--python-expr', bootstrap, '--python', file]
+    if ci:
+        p = Popen(cmd, shell=False, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = p.communicate()
+        raw_output = stdout.decode('utf-8', errors='replace') + stderr.decode('utf-8', errors='replace')
+    else:
+        # Redirect to a temp file: polling without draining the pipes would
+        # deadlock once Blender fills the OS pipe buffer.
+        with tempfile.TemporaryFile() as tmp_out:
+            p = Popen(cmd, shell=False, stdout=tmp_out, stderr=tmp_out)
+            while p.poll() is None:
+                sys.stdout.write('\r' + next(spinner) + ' running ' + basename + '...')
+                sys.stdout.flush()
+                time.sleep(0.1)
+            sys.stdout.write('\r' + ' ' * 80 + '\r')
             sys.stdout.flush()
-            time.sleep(0.1)
-        sys.stdout.write('\r' + ' ' * 80 + '\r')
-        sys.stdout.flush()
-
-    stdout, stderr = p.communicate()
-    raw_output = stdout.decode('utf-8', errors='replace') + stderr.decode('utf-8', errors='replace')
+            tmp_out.seek(0)
+            raw_output = tmp_out.read().decode('utf-8', errors='replace')
 
     if verbosity:
         print_output(raw_output, raw_output)

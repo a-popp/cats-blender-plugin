@@ -57,16 +57,6 @@ class TranslateShapekeyButton(bpy.types.Operator):
 
         saved_data = Common.SavedData()
 
-        to_translate = []
-
-        for mesh in Common.get_meshes_objects(mode=2):
-            if Common.has_shapekeys(mesh):
-                for shapekey in mesh.data.shape_keys.key_blocks:
-                    if 'vrc.' not in shapekey.name and shapekey.name not in to_translate:
-                        to_translate.append(shapekey.name)
-
-        update_dictionary(to_translate, translating_shapes=True, self=self)
-
         Common.update_shapekey_orders()
 
         i = 0
@@ -100,13 +90,6 @@ class TranslateBonesButton(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        to_translate = []
-        for armature in Common.get_armature_objects():
-            for bone in armature.data.bones:
-                to_translate.append(bone.name)
-
-        update_dictionary(to_translate, self=self)
-
         count = 0
         for armature in Common.get_armature_objects():
             for bone in armature.data.bones:
@@ -126,18 +109,6 @@ class TranslateObjectsButton(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
 
     def execute(self, context):
-        to_translate = []
-        for obj in Common.get_objects():
-            if obj.name not in to_translate:
-                to_translate.append(obj.name)
-            if obj.type == 'ARMATURE':
-                if obj.data and obj.data.name not in to_translate:
-                    to_translate.append(obj.data.name)
-                if obj.animation_data and obj.animation_data.action:
-                    to_translate.append(obj.animation_data.action.name)
-
-        update_dictionary(to_translate, self=self)
-
         i = 0
         for obj in Common.get_objects():
             obj.name, translated = translate(obj.name)
@@ -168,14 +139,6 @@ class TranslateMaterialsButton(bpy.types.Operator):
 
     def execute(self, context):
         saved_data = Common.SavedData()
-
-        to_translate = []
-        for mesh in Common.get_meshes_objects(mode=2):
-            for matslot in mesh.material_slots:
-                if matslot.name not in to_translate:
-                    to_translate.append(matslot.name)
-
-        update_dictionary(to_translate, self=self)
 
         i = 0
         for mesh in Common.get_meshes_objects(mode=2):
@@ -261,25 +224,6 @@ def load_translations():
         dictionary[key] = temp_dict[key]
 
     return dict_found
-
-
-def update_dictionary(to_translate_list, translating_shapes=False, self=None):
-    global dictionary
-
-    # Check if single string is given and put it into an array
-    if type(to_translate_list) is str:
-        to_translate_list = [to_translate_list]
-
-    # Translate everything using the offline dictionary only
-    for to_translate in to_translate_list:
-        to_translate = fix_jp_chars(to_translate)
-
-        for key, value in dictionary.items():
-            if key in to_translate:
-                if value:
-                    to_translate = to_translate.replace(key, value)
-
-    return
 
 
 def translate(to_translate, add_space=False, translating_shapes=False):

@@ -24,21 +24,15 @@
 # Repo: https://github.com/michaeldegroot/cats-blender-plugin
 # Edits by: GiveMeAllYourCats, Hotox
 
-import re
 import bpy
 import time
 import bmesh
-import platform
 
-from math import degrees
 from mathutils import Vector
-from datetime import datetime
 
-from . import common as Common
 from . import decimation as Decimation
 from . import translate as Translate
 from . import armature_bones as Bones
-from . import settings as Settings
 from .register import register_wrap
 from .translations import t
 
@@ -94,7 +88,6 @@ class SavedData:
 
             mode, selected, hidden, pose = values
             # print(obj_name, mode, selected, hidden)
-            print(obj_name, pose)
 
             if load_mode and obj.mode != mode:
                 set_active(obj, skip_sel=True)
@@ -109,7 +102,7 @@ class SavedData:
 
         # Set the active object
         if load_active and self.__active_object and get_objects().get(self.__active_object):
-            if self.__active_object not in ignore and self.__active_object != get_active():
+            if self.__active_object not in ignore and self.__active_object != getattr(get_active(), 'name', None):
                 set_active(get_objects().get(self.__active_object), skip_sel=True)
 
 
@@ -131,12 +124,6 @@ def get_armature_objects():
     return armatures
 
 
-def get_top_parent(child):
-    if child.parent:
-        return get_top_parent(child.parent)
-    return child
-
-
 def unhide_all_unnecessary():
     # TODO: Documentation? What does "unnecessary" mean?
     try:
@@ -155,23 +142,6 @@ def unhide_all():
         set_unselectable(obj, False)
 
     unhide_all_unnecessary()
-
-
-def unhide_children(parent):
-    for child in parent.children:
-        hide(child, False)
-        set_unselectable(child, False)
-        unhide_children(child)
-
-
-def unhide_all_of(obj_to_unhide=None):
-    if not obj_to_unhide:
-        return
-
-    top_parent = get_top_parent(obj_to_unhide)
-    hide(top_parent, False)
-    set_unselectable(top_parent, False)
-    unhide_children(top_parent)
 
 
 def unselect_all():
@@ -224,15 +194,6 @@ def switch(new_mode, check_mode=True):
         bpy.ops.object.mode_set(mode=new_mode, toggle=False)
 
 
-def set_default_stage_old():
-    switch('OBJECT')
-    unhide_all()
-    unselect_all()
-    armature = get_armature()
-    set_active(armature)
-    return armature
-
-
 def set_default_stage():
     """
 
@@ -243,11 +204,8 @@ def set_default_stage():
 
     # Remove rigidbody collections, as they cause issues if they are not in the view_layer
     if bpy.context.scene.remove_rigidbodies_joints:
-        print('Collections:')
         for collection in bpy.data.collections:
-            print(' ' + collection.name, collection.name.lower())
             if 'rigidbody' in collection.name.lower():
-                print('DELETE')
                 for obj in collection.objects:
                     delete(obj)
                 bpy.data.collections.remove(collection)
@@ -299,15 +257,6 @@ def remove_empty():
         unselect_all()
 
 
-def get_bone_angle(p1, p2):
-    try:
-        ret = degrees((p1.head - p1.tail).angle(p2.head - p2.tail))
-    except ValueError:
-        ret = 0
-
-    return ret
-
-
 def remove_unused_vertex_groups(ignore_main_bones=False):
     remove_count = 0
     unselect_all()
@@ -327,25 +276,6 @@ def remove_unused_vertex_groups(ignore_main_bones=False):
                     continue
                 mesh.vertex_groups.remove(mesh.vertex_groups[i])
                 remove_count += 1
-    return remove_count
-
-
-def remove_unused_vertex_groups_of_mesh(mesh):
-    remove_count = 0
-    unselect_all()
-    mesh.update_from_editmode()
-
-    vgroup_used = {i: False for i, k in enumerate(mesh.vertex_groups)}
-
-    for v in mesh.data.vertices:
-        for g in v.groups:
-            if g.weight > 0.0:
-                vgroup_used[g.group] = True
-
-    for i, used in sorted(vgroup_used.items(), reverse=True):
-        if not used:
-            mesh.vertex_groups.remove(mesh.vertex_groups[i])
-            remove_count += 1
     return remove_count
 
 
@@ -378,22 +308,6 @@ def find_center_vector_of_vertex_group(mesh, vertex_group):
     return average
 
 
-def vertex_group_exists(mesh_name, bone_name):
-    mesh = get_objects()[mesh_name]
-    data = mesh.data
-    verts = data.vertices
-
-    for vert in verts:
-        i = vert.index
-        try:
-            mesh.vertex_groups[bone_name].weight(i)
-            return True
-        except:
-            pass
-
-    return False
-
-
 def get_meshes(self, context):
     # Modes:
     # 0 = With Armature only
@@ -413,16 +327,6 @@ def get_top_meshes(self, context):
     choices = []
 
     for mesh in get_meshes_objects(mode=1, check=False):
-        choices.append((mesh.name, mesh.name, mesh.name))
-
-    bpy.types.Object.Enum = sorted(choices, key=lambda x: tuple(x[0].lower()))
-    return bpy.types.Object.Enum
-
-
-def get_all_meshes(self, context):
-    choices = []
-
-    for mesh in get_meshes_objects(mode=2, check=False):
         choices.append((mesh.name, mesh.name, mesh.name))
 
     bpy.types.Object.Enum = sorted(choices, key=lambda x: tuple(x[0].lower()))
@@ -631,7 +535,6 @@ def fix_armature_names(armature_name=None):
     armature = get_armature(armature_name=armature_name)
     armature.name = 'Armature'
     if not armature.data.name.startswith('Armature'):
-        Translate.update_dictionary(armature.data.name)
         armature.data.name = 'Armature (' + Translate.translate(armature.data.name, add_space=True)[0] + ')'
 
     # Reset the armature lists
@@ -653,16 +556,6 @@ def fix_armature_names(armature_name=None):
         pass
 
 
-def get_texture_sizes(self, context):
-    bpy.types.Object.Enum = [
-        ("1024", "1024 (low)", "1024"),
-        ("2048", "2048 (medium)", "2048"),
-        ("4096", "4096 (high)", "4096")
-    ]
-
-    return bpy.types.Object.Enum
-
-
 def get_meshes_objects(armature_name=None, mode=0, check=True, visible_only=False):
     # Modes:
     # 0 = With armatures only
@@ -678,7 +571,7 @@ def get_meshes_objects(armature_name=None, mode=0, check=True, visible_only=Fals
     meshes = []
     for ob in get_objects():
         if ob.type == 'MESH':
-            if mode == 0 or mode == 5:
+            if mode == 0:
                 if ob.parent:
                     if ob.parent.type == 'ARMATURE' and ob.parent.name == armature_name:
                         meshes.append(ob)
@@ -778,6 +671,7 @@ def join_meshes(armature_name=None, mode=0, apply_transformations=True, repair_s
 
     # Get the name of the active mesh in order to check if it was deleted later
     active_mesh_name = get_active().name
+    meshes_to_join_names = {m.name for m in meshes_to_join}
 
     # Join the meshes
     if bpy.ops.object.join.poll():
@@ -789,7 +683,7 @@ def join_meshes(armature_name=None, mode=0, apply_transformations=True, repair_s
     for mesh in get_meshes_objects(armature_name=armature_name):
         if mesh.name == active_mesh_name:
             set_active(mesh)
-        elif mesh.name in meshes_to_join:
+        elif mesh.name in meshes_to_join_names:
             delete(mesh)
             print('DELETED', mesh.name, mesh.users)
 
@@ -863,25 +757,6 @@ def apply_all_transforms():
     for obj in get_objects():
         if not obj.parent:
             apply_transforms_with_children(obj)
-
-
-def reset_transforms(armature_name=None):
-    if not armature_name:
-        armature_name = bpy.context.scene.armature
-    armature = get_armature(armature_name=armature_name)
-
-    # Reset transforms on armature
-    for i in range(0, 3):
-        armature.location[i] = 0
-        armature.rotation_euler[i] = 0
-        armature.scale[i] = 1
-
-    # Apply transforms of meshes
-    for mesh in get_meshes_objects(armature_name=armature_name):
-        for i in range(0, 3):
-            mesh.location[i] = 0
-            mesh.rotation_euler[i] = 0
-            mesh.scale[i] = 1
 
 
 def _separate_by_materials(mesh_obj):
@@ -1060,20 +935,6 @@ def can_remove_shapekey(key_block):
         if v0.co != v1.co:
             return False
     return True
-
-
-def separate_by_verts():
-    for obj in bpy.context.selected_objects:
-        if obj.type == 'MESH' and len(obj.vertex_groups) > 0:
-            Common.set_active(obj)
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_mode(type='VERT')
-        for vgroup in obj.vertex_groups:
-            bpy.ops.mesh.select_all(action='DESELECT')
-            bpy.ops.object.vertex_group_set_active(group=vgroup.name)
-            bpy.ops.object.vertex_group_select()
-            bpy.ops.mesh.separate(type='SELECTED')
-        bpy.ops.object.mode_set(mode='OBJECT')
 
 
 def reset_context_scenes():
@@ -1275,45 +1136,6 @@ def sort_shape_keys(mesh_name, shape_key_order=None):
     wm.progress_end()
 
 
-def isEmptyGroup(group_name):
-    mesh = get_objects().get('Body')
-    if mesh is None:
-        return True
-    vgroup = mesh.vertex_groups.get(group_name)
-    if vgroup is None:
-        return True
-
-    for vert in mesh.data.vertices:
-        for group in vert.groups:
-            if group.group == vgroup.index:
-                if group.weight > 0:
-                    return False
-
-    return True
-
-
-def removeEmptyGroups(obj, thres=0):
-    z = []
-    for v in obj.data.vertices:
-        for g in v.groups:
-            if g.weight > thres:
-                if g not in z:
-                    z.append(obj.vertex_groups[g.group])
-    for r in obj.vertex_groups:
-        if r not in z:
-            obj.vertex_groups.remove(r)
-
-
-def removeZeroVerts(obj, thres=0):
-    for v in obj.data.vertices:
-        z = []
-        for g in v.groups:
-            if not g.weight > thres:
-                z.append(g)
-        for r in z:
-            obj.vertex_groups[g.group].remove([v.index])
-
-
 def delete_hierarchy(parent):
     unselect_all()
     to_delete = []
@@ -1339,12 +1161,6 @@ def delete(obj):
 
     objs = bpy.data.objects
     objs.remove(objs[obj.name], do_unlink=True)
-
-
-def days_between(d1, d2, time_format):
-    d1 = datetime.strptime(d1, time_format)
-    d2 = datetime.strptime(d2, time_format)
-    return abs((d2 - d1).days)
 
 
 def delete_bone_constraints(armature_name=None):
@@ -1404,47 +1220,6 @@ def delete_zero_weight(armature_name=None, ignore=''):
                             objects.vertex_groups.remove(vertex_group)
 
     return count
-
-
-def remove_unused_objects():
-    default_scene_objects = []
-    for obj in get_objects():
-        if (obj.type == 'CAMERA' and obj.name == 'Camera') \
-                or (obj.type == 'LAMP' and obj.name == 'Lamp') \
-                or (obj.type == 'LIGHT' and obj.name == 'Light') \
-                or (obj.type == 'MESH' and obj.name == 'Cube'):
-            default_scene_objects.append(obj)
-
-    if len(default_scene_objects) == 3:
-        for obj in default_scene_objects:
-            delete_hierarchy(obj)
-
-
-def remove_no_user_objects():
-    # print('\nREMOVE OBJECTS')
-    for block in get_objects():
-        # print(block.name, block.users)
-        if block.users == 0:
-            print('Removing obj ', block.name)
-            delete(block)
-    # print('\nREMOVE MESHES')
-    for block in bpy.data.meshes:
-        # print(block.name, block.users)
-        if block.users == 0:
-            print('Removing mesh ', block.name)
-            bpy.data.meshes.remove(block)
-    # print('\nREMOVE MATERIALS')
-    for block in bpy.data.materials:
-        # print(block.name, block.users)
-        if block.users == 0:
-            print('Removing material ', block.name)
-            bpy.data.materials.remove(block)
-
-    # print('\nREMOVE MATS')
-    # for block in bpy.data.materials:
-    #     print(block.name, block.users)
-    #     if block.users == 0:
-    #         bpy.data.materials.remove(block)
 
 
 def is_end_bone(name, armature_name):
@@ -1567,7 +1342,7 @@ class ShowError(bpy.types.Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        dpi_value = Common.get_user_preferences().system.dpi
+        dpi_value = get_user_preferences().system.dpi
         return context.window_manager.invoke_props_dialog(self, width=dpi_value * dpi_scale)
 
     def draw(self, context):
@@ -1600,8 +1375,8 @@ def remove_doubles(mesh, threshold, save_shapes=True):
     if not mesh:
         return 0
 
-    # If the mesh has no shapekeys, don't remove doubles
-    if not has_shapekeys(mesh) or len(mesh.data.shape_keys.key_blocks) == 1:
+    # If the mesh has no shapekeys and we want to preserve them, don't remove doubles
+    if save_shapes and (not has_shapekeys(mesh) or len(mesh.data.shape_keys.key_blocks) == 1):
         return 0
 
     pre_tris = len(mesh.data.polygons)
@@ -1696,10 +1471,6 @@ def has_shapekeys(mesh):
     if not hasattr(mesh.data, 'shape_keys'):
         return False
     return hasattr(mesh.data.shape_keys, 'key_blocks')
-
-
-def matmul(a, b):
-    return a @ b
 
 
 def ui_refresh():

@@ -38,33 +38,6 @@ ignore_meshes = []
 
 
 @register_wrap
-class ScanButton(bpy.types.Operator):
-    bl_idname = 'cats_decimation.auto_scan'
-    bl_label = t('ScanButton.label')
-    bl_description = t('ScanButton.desc')
-    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-
-    @classmethod
-    def poll(cls, context):
-        if context.scene.add_shape_key == "":
-            return False
-
-        return True
-
-    def execute(self, context):
-        shape = context.scene.add_shape_key
-        shapes = Common.get_shapekeys_decimation_list(self, context)
-        count = len(shapes)
-
-        if count > 1 and shapes.index(shape) == count - 1:
-            context.scene.add_shape_key = shapes[count - 2]
-
-        ignore_shapes.append(shape)
-
-        return {'FINISHED'}
-
-
-@register_wrap
 class AddShapeButton(bpy.types.Operator):
     bl_idname = 'cats_decimation.add_shape'
     bl_label = t('AddShapeButton.label')
@@ -213,7 +186,7 @@ class AutoDecimateButton(bpy.types.Operator):
             Common.switch('OBJECT')
             if context.scene.decimation_remove_doubles:
                 Common.remove_doubles(mesh, 0.00001, save_shapes=True)
-            current_tris_count += Common.get_tricount(mesh.data.polygons)
+            current_tris_count += Common.get_tricount(mesh)
 
         if animation_weighting:
             for mesh in meshes_obj:

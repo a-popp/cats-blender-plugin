@@ -127,6 +127,7 @@ class CombineMaterialsButton(bpy.types.Operator):
                 if mat_slot.material and mat_slot.material.node_tree:
                     # print('MAT: ', mat_slot.material.name)
                     nodes = mat_slot.material.node_tree.nodes
+                    nodes_to_remove = []
                     for node in nodes:
 
                         # Skip certain known nodes
@@ -141,10 +142,10 @@ class CombineMaterialsButton(bpy.types.Operator):
                         if node.type == 'TEX_IMAGE':
                             image = node.image
                             if 'toon' in node.name or 'sphere' in node.name:
-                                nodes.remove(node)
+                                nodes_to_remove.append(node)
                                 continue
                             if not image:
-                                nodes.remove(node)
+                                nodes_to_remove.append(node)
                                 continue
                             # print('  ', node.name)
                             # print('    ', image.name)
@@ -178,6 +179,9 @@ class CombineMaterialsButton(bpy.types.Operator):
                             else:
                                 # print('    ', input, 'name:', value.name)
                                 hash_this += value.name
+
+                    for node in nodes_to_remove:
+                        nodes.remove(node)
 
                     # Now create or add to the dict key that has this hash value
                     if hash_this not in self.combined_tex:

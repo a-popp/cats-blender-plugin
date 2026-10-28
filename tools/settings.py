@@ -174,7 +174,7 @@ def apply_settings():
     # Runs on the main thread via bpy.app.timers: accessing bpy data from a
     # background thread is not safe. Returns a retry interval in seconds, or
     # None once the settings have been applied.
-    if not hasattr(bpy.context, 'scene'):
+    if bpy.context.scene is None:
         return 0.3
 
     try:

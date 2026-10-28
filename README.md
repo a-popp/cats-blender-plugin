@@ -131,6 +131,10 @@ python tests/run.py -b <path-to-blender> -t "bonemerging" -c true -v true
 python tests/run.py -b <path-to-blender> -t "boneparenting" -c true -v true
 python tests/run.py -b <path-to-blender> -t "material" -c true -v true
 python tests/run.py -b <path-to-blender> -t "export" -c true -v true
+python tests/run.py -b <path-to-blender> -t "joinmeshes" -c true -v true
+python tests/run.py -b <path-to-blender> -t "settings" -c true -v true
+python tests/run.py -b <path-to-blender> -t "decimation" -c true -v true
+python tests/run.py -b <path-to-blender> -t "bake" -c true -v true
 ```
 
 Tests use **programmatically generated fixtures** (no external downloads).

@@ -25,6 +25,7 @@
 
 import os
 import py_compile
+import re
 import sys
 
 addon_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -85,10 +86,12 @@ for py_file in py_files:
     with open(py_file, 'r', encoding='utf-8', errors='replace') as f:
         content = f.read()
     for mod in deleted_modules:
-        if 'import ' + mod in content or 'from ' + mod in content:
+        # (?!\w) so 'tools.armature' doesn't match 'tools.armature_custom'
+        pattern = r'(import|from)\s+' + re.escape(mod) + r'(?!\w)'
+        if re.search(pattern, content):
             # Allow comments
             for line in content.split('\n'):
-                if ('import ' + mod in line or 'from ' + mod in line) and not line.strip().startswith('#'):
+                if re.search(pattern, line) and not line.strip().startswith('#'):
                     errors.append('Forbidden import in {}: {}'.format(py_file, line.strip()))
     for cat in removed_operator_categories:
         if 'bpy.ops.' + cat in content:

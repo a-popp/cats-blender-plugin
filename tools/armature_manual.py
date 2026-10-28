@@ -969,7 +969,7 @@ class RemoveDoublesNormal(bpy.types.Operator):
         Common.set_default_stage()
 
         for mesh in meshes:
-            removed_tris += Common.remove_doubles(mesh, 0.0001, save_shapes=True)
+            removed_tris += Common.remove_doubles(mesh, 0.0001, save_shapes=False)
 
         Common.set_default_stage()
 
@@ -1225,7 +1225,6 @@ class RemoveFBTButton(bpy.types.Operator):
         if not hips or not spine or not left_leg or not right_leg:
             saved_data.load()
             self.report({'ERROR'}, t('RemoveFBTButton.error.bonesNotFound'))
-            saved_data.load()
             return {'CANCELLED'}
 
         if not left_leg_new or not right_leg_new:
@@ -1324,7 +1323,7 @@ class DuplicateBonesButton(bpy.types.Operator):
         # Fix bone parenting
         for bone_name in duplicate_vertex_groups.values():
             bone = armature.data.edit_bones.get(bone_name)
-            if bone.parent.name in duplicate_vertex_groups.keys():
+            if bone.parent and bone.parent.name in duplicate_vertex_groups.keys():
                 bone.parent = armature.data.edit_bones.get(duplicate_vertex_groups[bone.parent.name])
 
         # Create the missing vertex groups and duplicate the weight

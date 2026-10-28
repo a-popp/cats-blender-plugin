@@ -53,7 +53,11 @@ class RootButton(bpy.types.Operator):
         Common.switch('EDIT')
 
         # this is the bones that will be parented
-        child_bones = globs.root_bones[context.scene.root_bone]
+        child_bones = globs.root_bones.get(context.scene.root_bone)
+        if not child_bones:
+            self.report({'ERROR'}, t('RootButton.error.noBones'))
+            saved_data.load()
+            return {'CANCELLED'}
 
         # Create the new root bone
         new_bone_name = 'Root_' + child_bones[0]
