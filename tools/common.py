@@ -227,7 +227,7 @@ def set_default_stage():
         set_active(armature)
 
     # Fix broken armatures
-    if not bpy.context.scene.armature:
+    if not bpy.context.scene.armature and armature:
         bpy.context.scene.armature = armature.name
 
     return armature
@@ -429,7 +429,7 @@ def get_bones(names=None, armature_name=None, check_list=False):
 
     choices2 = []
     for name in names:
-        if name in armature.data.bones and choices[0][0] != name:
+        if name in armature.data.bones and (not choices or choices[0][0] != name):
             choices2.append((name, name, name))
 
     if not check_list:
@@ -590,7 +590,7 @@ def get_meshes_objects(armature_name=None, mode=0, check=True, visible_only=Fals
                     meshes.append(ob)
 
     if visible_only:
-        for mesh in meshes:
+        for mesh in list(meshes):
             if is_hidden(mesh):
                 meshes.remove(mesh)
 
@@ -1009,7 +1009,7 @@ def repair_shapekey_order(mesh_name):
         custom_data['shape_key_order'] = shape_key_order_temp
         armature['CUSTOM'] = custom_data
 
-    # sort_shape_keys(mesh_name, custom_data['shape_key_order'])
+    sort_shape_keys(mesh_name, custom_data['shape_key_order'])
 
 
 def update_shapekey_orders():

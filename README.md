@@ -7,14 +7,18 @@ Blender Extensions Platform add-on targeting **Blender 5.2 LTS** only.
 
 ## Supported Features
 
-- **Model panel**: Export via native FBX, pose mode controls, pose-to-rest.
+- **Model panel**: Export via native FBX, pose mode controls, pose-to-rest,
+  pose-to-shape-key.
 - **Model Options**: Mesh separation/joining, weight merging, offline
-  dictionary translation, bone cleanup, normals, transforms, FBT helpers.
+  dictionary translation, bone cleanup, normals, transforms, FBT helpers,
+  VRM shape key fixes, and a settings section (embed textures on export,
+  UI language, revert settings, debug translations).
 - **Visemes**: Generate viseme shape keys from A, O, and CH shape keys.
 - **Decimation**: Smart, safe, half, full, and custom decimation modes.
 - **Custom**: Merge armatures and attach meshes.
 - **Bake**: Desktop and Quest texture/mesh baking.
-- **Optimization**: Bone merging and root-bone tools (no Atlas tab).
+- **Optimization**: Combine identical material slots, convert textures to
+  PNG, bone merging, and root-bone tools (no Atlas tab).
 - **Shape Key to Basis**: Mesh shape-key context-menu operation.
 
 ## Removed / Unsupported Legacy Features
@@ -98,11 +102,25 @@ cats-blender-plugin/
     optimization.py        # Optimization panel
     bake.py                # Bake panel
   resources/               # Dictionaries, translations, BakeFixer
+  scripts/build.py         # Rebuilds the extension zip
   tests/                   # Test suite (generated fixtures, no network)
   .github/workflows/       # GitHub Actions CI
 ```
 
 ### Build the Extension Package
+
+Rebuild the zip (validates the manifest, then builds):
+
+```bash
+python scripts/build.py
+```
+
+This writes `build/cats_blender_plugin-<version>.zip`. It locates Blender via
+`--blender <path>`, the `BLENDER` environment variable, or `PATH`. Pass
+`--skip-validate` to skip manifest validation and `--verbose` to see Blender's
+output.
+
+The underlying command:
 
 ```bash
 blender --background --factory-startup --command extension build --source-dir . --output-dir build/

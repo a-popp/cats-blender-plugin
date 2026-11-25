@@ -39,18 +39,20 @@ from .translations import t
 main_dir = pathlib.Path(os.path.dirname(__file__)).parent.resolve()
 resources_dir = os.path.join(str(main_dir), "resources")
 
-# Use extension user path for writable settings if available (Blender 4.2+).
-# Fall back to resources dir for legacy installs / tests.
+# Use the extension's user directory for writable settings if available
+# (Blender 4.2+). Fall back to the resources dir for dev checkouts / tests.
 # __package__ is the tools subpackage ('<ext>.tools'), so strip the last
 # component to get the extension package name itself.
 try:
-    _ext_user_path = bpy.utils.extension_path_user(
-        __package__.rpartition('.')[0] or __package__, path="settings.json")
-    if _ext_user_path:
-        settings_file = _ext_user_path
-    else:
-        settings_file = os.path.join(resources_dir, "settings.json")
+    # create=True is required: the extension's user directory does not exist
+    # on a fresh install, and 'path' is a subdirectory, not a file name.
+    _ext_user_dir = bpy.utils.extension_path_user(__package__.rpartition('.')[0] or __package__, create=True)
 except (AttributeError, ValueError, TypeError):
+    _ext_user_dir = None
+
+if _ext_user_dir:
+    settings_file = os.path.join(_ext_user_dir, "settings.json")
+else:
     settings_file = os.path.join(resources_dir, "settings.json")
 
 settings_data = None
@@ -135,6 +137,7 @@ def load_settings():
 
 
 def save_settings():
+    os.makedirs(os.path.dirname(settings_file), exist_ok=True)
     with open(settings_file, 'w', encoding="utf8") as outfile:
         json.dump(settings_data, outfile, ensure_ascii=False, indent=4)
 
@@ -196,13 +199,6 @@ def apply_settings():
     return None
 
 
-def settings_changed():
-    for setting, value in settings_default.items():
-        if value[1] and settings_data.get(setting) != settings_data_unchanged.get(setting):
-            return True
-    return False
-
-
 def update_settings(self, context):
     # Use False and None for this variable, because Blender would complain otherwise
     # None means that the settings did change
@@ -225,7 +221,3 @@ def update_settings(self, context):
 
 def get_embed_textures():
     return settings_data.get('embed_textures')
-
-
-def get_ui_lang():
-    return settings_data.get('ui_lang')

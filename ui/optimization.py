@@ -22,7 +22,6 @@
 
 import bpy
 
-from .. import globs
 from .main import ToolPanel
 from ..tools import common as Common
 from ..tools import material as Material

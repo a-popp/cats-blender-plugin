@@ -83,7 +83,11 @@ def register():
     # Load settings
     try:
         tools.settings.load_settings()
-    except FileNotFoundError:
+    except OSError as error:
+        # Settings are stored in the extension's user directory. If that can't
+        # be read or written the add-on can't start; print the reason because
+        # the traceback is suppressed below.
+        print('Could not load the CATS settings file:', error)
         sys.tracebacklimit = 0
         raise ImportError(t('Main.error.restartAndEnable_alt'))
 

@@ -223,7 +223,7 @@ def pose_to_shapekey(name):
     Common.switch('POSE')
     armature.data.pose_position = 'POSE'
 
-    saved_data.load(ignore=armature.name)
+    saved_data.load(ignore=[armature.name])
     return armature
 
 
@@ -285,7 +285,8 @@ class PoseToRest(bpy.types.Operator):
             scale_y = bone.scale[1]
             scale_z = bone.scale[2]
 
-            if armature.data.bones.get(bone.name).inherit_scale:
+            # Bone.inherit_scale is an enum; 'NONE'/'NONE_LEGACY' break the chain
+            if armature.data.bones.get(bone.name).inherit_scale not in ('NONE', 'NONE_LEGACY'):
                 def check_parent(child, scale_x_tmp, scale_y_tmp, scale_z_tmp):
                     if child.parent:
                         parent = child.parent
@@ -293,7 +294,7 @@ class PoseToRest(bpy.types.Operator):
                         scale_y_tmp *= parent.scale[1]
                         scale_z_tmp *= parent.scale[2]
 
-                        if armature.data.bones.get(parent.name).inherit_scale:
+                        if armature.data.bones.get(parent.name).inherit_scale not in ('NONE', 'NONE_LEGACY'):
                             scale_x_tmp, scale_y_tmp, scale_z_tmp = check_parent(parent, scale_x_tmp, scale_y_tmp,
                                                                                  scale_z_tmp)
 
@@ -1366,66 +1367,3 @@ class ConnectBonesButton(bpy.types.Operator):
 
         self.report({'INFO'}, 'Connected all bones!')
         return {'FINISHED'}
-
-
-@register_wrap
-class TestButton(bpy.types.Operator):
-    bl_idname = 'cats_manual.test'
-    bl_label = 'Testing Stuff'
-    bl_description = 'This is for tests by the devs only'
-    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
-
-    def execute(self, context):
-        self.copy_weights(context)
-
-        self.report({'INFO'}, 'Test complete!')
-        return {'FINISHED'}
-
-    def copy_weights(self, context):
-        # mesh_source = Common.get_objects()['ClothesCombined']
-        # mesh_target = Common.get_objects()['ClothesW']
-        #
-        # mesh_source = Common.get_objects()['ClothesCombined']
-        # mesh_target = Common.get_objects()['ClothesW']
-
-        mesh_source = Common.get_objects()['Legs']
-        mesh_target = Common.get_objects()['_LegsW']
-
-        def group_source(vg):
-            return mesh_source.vertex_groups[vg.group]
-
-        def group_target(vg):
-            return mesh_target.vertex_groups[vg.group]
-
-        # Copy all vertex groups
-        for vg in mesh_source.vertex_groups:
-            if not mesh_target.vertex_groups.get(vg.name):
-                mesh_target.vertex_groups.new(name=vg.name)
-
-        # Copy vertex group weights
-        i = 0
-        for v in mesh_target.data.vertices:
-            # print(i)
-
-            # Find closest vert in source
-            v_source = None
-            v_dist = 100
-
-            for v2 in mesh_source.data.vertices:
-                if (v.co - v2.co).length < v_dist:
-                    v_dist = (v.co - v2.co).length
-                    v_source = v2
-                    if v_dist < 0.0001:
-                        break
-
-            print(i, v_dist)
-
-            for vg in v_source.groups:
-                vg_target = group_target(vg)
-                # print(vg_target.name, vg.weight)
-
-                vg_target.add([v.index], vg.weight, 'REPLACE')
-
-            i += 1
-            # if i == 1000:
-            #     break

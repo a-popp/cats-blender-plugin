@@ -515,7 +515,7 @@ class BakeButton(bpy.types.Operator):
                             Common.switch('EDIT')
                             bpy.ops.mesh.select_all(action='SELECT')
                             bpy.ops.uv.select_all(action='SELECT')
-                            bpy.ops.uv.smart_project(angle_limit=66.0, island_margin=0.01)
+                            bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.01)
                             Common.switch('OBJECT')
                             child.data.uv_layers.active_index = idx
                     elif uv_overlap_correction == "UNMIRROR":
@@ -594,10 +594,8 @@ class BakeButton(bpy.types.Operator):
                 Common.switch('EDIT')
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.uv.select_all(action='SELECT')
-                # detect if UVPackMaster installed and configured
-                if not overlap_aware:
-                    bpy.ops.uv.pack_islands(rotate=True, margin=margin)
-                try:  # UVP doesn't respect margins when called like this, find out why
+                try:  # detect if UVPackMaster installed and configured. UVP doesn't
+                    # respect margins when called like this, find out why
                     context.scene.uvp2_props.normalize_islands = False
                     context.scene.uvp2_props.lock_overlapping_mode = ('0' if
                                                                       layer == 'CATS UV Super' else
@@ -610,8 +608,9 @@ class BakeButton(bpy.types.Operator):
                     for _ in range(1, 10):
                         bpy.ops.uvpackmaster2.uv_pack()
                 except AttributeError:
-                    bpy.ops.uv.pack_islands(rotate=True, margin=margin)
-                    pass
+                    # UVPackMaster not installed: fall back to Blender's packer
+                    if not overlap_aware:
+                        bpy.ops.uv.pack_islands(rotate=True, margin=margin)
                 Common.switch('OBJECT')
             for obj in collection.all_objects:
                 if obj.type == 'MESH':
@@ -698,7 +697,7 @@ class BakeButton(bpy.types.Operator):
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Roughness")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Anisotropic Rotation")
             self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", 1.0)
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic")
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic IOR Level")
             self.set_values([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", 0)
             # Specularity of 0 messes up 'roughness' bakes. Fix that here.
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
@@ -710,7 +709,7 @@ class BakeButton(bpy.types.Operator):
                            (resolution, resolution), 32, 0, [1, 1, 1, 1.0], True, int(margin * resolution / 2))
 
             # Revert the changes (re-flip)
-            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic")
+            self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Metallic", "Anisotropic IOR Level")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Anisotropic Rotation")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Alpha", "Roughness")
             self.swap_links([obj for obj in collection.all_objects if obj.type == "MESH"], "Specular IOR Level", "Coat IOR")
@@ -1060,7 +1059,7 @@ class BakeButton(bpy.types.Operator):
                 alphatexnode = tree.nodes.new("ShaderNodeTexImage")
                 alphatexnode.image = bpy.data.images["SCRIPT_alpha.png"]
                 tree.links.new(bsdfnode.inputs["Alpha"], alphatexnode.outputs["Color"])
-            mat.blend_method = 'CLIP'
+            mat.surface_render_method = 'DITHERED'
         if pass_emit:
             emittexnode = tree.nodes.new("ShaderNodeTexImage")
             emittexnode.image = bpy.data.images["SCRIPT_emission.png"]

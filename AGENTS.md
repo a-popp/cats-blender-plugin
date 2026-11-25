@@ -30,7 +30,10 @@ python -m compileall -q .
 # Validate manifest
 blender --background --factory-startup --command extension validate .
 
-# Build extension package
+# Rebuild extension zip (validate + build, writes build/*.zip)
+python scripts/build.py
+
+# Build extension package directly
 blender --background --factory-startup --command extension build --source-dir . --output-dir build/
 
 # Run all tests

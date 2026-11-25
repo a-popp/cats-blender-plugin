@@ -286,7 +286,6 @@ or select ""Apply Transforms""!
 The transforms of the merge armature got reset and the mesh you have to modify got selected.
 Now place this selected mesh where and how you want it to be and then merge the armatures again.
 If you don't want that, undo this operation.",,
-merge_armatures.error.pleaseUndo,"Something went wrong! Please undo, check your selections and try again.",,
 BoneMergeButton.label,Merge Bones,ボーンをマージする,뼈 통합
 BoneMergeButton.desc,"Merges the given percentage of bones together.
 This is useful to reduce the amount of bones used by Dynamic Bones.",,

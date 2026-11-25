@@ -137,18 +137,6 @@ class DecimationPanel(ToolPanel, bpy.types.Panel):
                 col.label(text=t('DecimationPanel.warn.correctWhitelist'), icon='INFO')
                 row = col.row(align=True)
 
-            # # row = col.row(align=True)
-            # # rows = 2
-            # # row = layout.row()
-            # # row.template_list("auto.decimate_list", "", bpy.context.scene, "auto", bpy.context.scene, "custom_index", rows=rows)
-            #
-            # obj = context.object
-            #
-            # # template_list now takes two new args.
-            # # The first one is the identifier of the registered UIList to use (if you want only the default list,
-            # # with no custom draw code, use "UI_UL_list").
-            # layout.template_list("ShapekeyList", "", ('heyho', 'heyho2'), "material_slots", ('heyho', 'heyho2'), "active_material_index")
-
         col.separator()
         col.separator()
         row = col.row(align=True)

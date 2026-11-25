@@ -384,6 +384,7 @@ class AutoDecimateButton(bpy.types.Operator):
         elif decimation <= 0:
             Common.show_error(4.5, [t('decimate.cantDecimate1', number=str(max_tris)),
                                     t('decimate.cantDecimate2')])
+            return
 
         meshes.sort(key=lambda x: x[1])
 

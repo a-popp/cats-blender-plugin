@@ -111,6 +111,16 @@ class ManualPanel(ToolPanel, bpy.types.Panel):
             row.label(text="")
             row.operator(Armature_manual.RemoveZeroWeightGroups.bl_idname, text=t('ManualPanel.RemoveZeroWeightGroups'))
 
+            row = col.row(align=True)
+            row.scale_y = 0.75
+            row.prop(context.scene, 'keep_upper_chest')
+            row = col.row(align=True)
+            row.scale_y = 0.75
+            row.prop(context.scene, 'keep_end_bones')
+            row = col.row(align=True)
+            row.scale_y = 0.75
+            row.prop(context.scene, 'remove_rigidbodies_joints')
+
             col.separator()
             row = col.row(align=True)
             row.scale_y = button_height
@@ -153,11 +163,6 @@ class ManualPanel(ToolPanel, bpy.types.Panel):
             row = col.row(align=True)
             row.scale_y = button_height
             row.operator(Armature_manual.FixVRMShapesButton.bl_idname, icon='SHAPEKEY_DATA')
-
-            if globs.dev_branch:
-                row = col.row(align=True)
-                row.scale_y = button_height
-                row.operator(Armature_manual.TestButton.bl_idname)
 
         # Settings
         col.separator()

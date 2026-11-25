@@ -79,11 +79,16 @@ class ExportModel(bpy.types.Operator):
                 # Check tris count
                 _tris_count += len(mesh.data.polygons)
 
-                # Check material count
+                # Check material count and whether the materials use image textures
                 for mat_slot in mesh.material_slots:
-                    if mat_slot and mat_slot.material and mat_slot.material.users and mat_slot.material.name not in _mat_list:
-                        _mat_list.append(mat_slot.material.name)
-                        _textures_found = True
+                    if mat_slot and mat_slot.material and mat_slot.material.users:
+                        if mat_slot.material.name not in _mat_list:
+                            _mat_list.append(mat_slot.material.name)
+                        if not _textures_found and mat_slot.material.use_nodes:
+                            for node in mat_slot.material.node_tree.nodes:
+                                if node.type == 'TEX_IMAGE' and node.image:
+                                    _textures_found = True
+                                    break
 
                 if Common.has_shapekeys(mesh):
                     # Check if there are broken shapekeys
@@ -96,7 +101,7 @@ class ExportModel(bpy.types.Operator):
                                     _broken_shapes.append(shapekey.name)
                                     vert_count = 1000
                                     break
-                            # Only check the first 10 vertices of this shapekey
+                            # Only check the first 1000 vertices of this shapekey
                             if vert_count == 1000:
                                 break
 
